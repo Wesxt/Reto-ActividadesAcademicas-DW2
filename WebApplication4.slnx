@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="UniCampus.Entities/UniCampus.Entities.csproj" Id="a1a1a1a1-1111-1111-1111-111111111111" />
+  <Project Path="UniCampus.DAL/UniCampus.DAL.csproj" Id="b2b2b2b2-2222-2222-2222-222222222222" />
+  <Project Path="UniCampus.BLL/UniCampus.BLL.csproj" Id="c3c3c3c3-3333-3333-3333-333333333333" />
+  <Project Path="WebApplication4/WebApplication4.csproj" Id="ed8f7110-e4ef-48b4-ab8d-b44c7762c85c" />
+</Solution>

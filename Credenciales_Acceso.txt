@@ -1,0 +1,60 @@
+================================================================================
+UNICAMPUS - PLATAFORMA DE REGISTRO DE ACTIVIDADES ACADÉMICAS
+CREDENCIALES DE ACCESO DEL SISTEMA (ROLES Y PERMISOS)
+================================================================================
+
+Estas cuentas se encuentran registradas en la base de datos UniCampusDB
+a través del script reproducible "03_BaseDatos.sql".
+
+--------------------------------------------------------------------------------
+1. CUENTA ADMINISTRADOR DEL SISTEMA (Control Total y Gobernanza)
+--------------------------------------------------------------------------------
+Usuario / Correo: admin@unicampus.edu
+Contraseña:       admin123
+Rol:              Administrador
+Programa:         Dirección Académica
+
+Capacidades exclusivas:
+- Acceso al "Panel Administrador: Usuarios y Categorías".
+- Listar todos los usuarios registrados en el sistema.
+- Cambiar el rol en vivo de cualquier usuario (Estudiante, Docente, Administrador).
+- Eliminar cuentas de usuarios del sistema (con salvaguardas de auto-protección).
+- Crear y eliminar tipos de actividades en el catálogo (TipoActividad).
+- Moderar y eliminar cualquier reseña o actividad académica en el sistema.
+
+--------------------------------------------------------------------------------
+2. CUENTA DOCENTE INSTITUCIONAL (Organizador Académico)
+--------------------------------------------------------------------------------
+Usuario / Correo: docente@americana.edu.co
+Contraseña:       docente123
+Rol:              Docente
+Programa:         Ingeniería de Sistemas
+
+Capacidades:
+- Crear y publicar nuevas actividades académicas (Título, Fechas, Horas, Cupos, Modalidad).
+- Editar actividades existentes.
+- Ver la lista de estudiantes inscritos en sus actividades.
+- Inscribir o desinscribir participantes manualmente.
+
+--------------------------------------------------------------------------------
+3. CUENTA ESTUDIANTE (Participante)
+--------------------------------------------------------------------------------
+Usuario / Correo: estudiante@americana.edu.co
+Contraseña:       123456789
+Rol:              Estudiante
+Programa:         Ingeniería de Sistemas
+
+Capacidades:
+- Consultar y filtrar actividades académicas disponibles.
+- Auto-inscribirse con 1 clic ("Inscribirme con mi cuenta").
+- Cancelar su propia inscripción.
+- Publicar calificaciones y opiniones (1 a 5 estrellas).
+- Eliminar sus propias reseñas.
+- NOTA: El formulario de creación y edición está oculto y bloqueado para estudiantes.
+
+--------------------------------------------------------------------------------
+4. REGISTRO LIBRE DE NUEVAS CUENTAS
+--------------------------------------------------------------------------------
+Cualquier nuevo usuario puede registrarse directamente desde la pantalla de login
+haciendo clic en "Regístrate aquí", asignando sus datos institucionales.
+================================================================================
