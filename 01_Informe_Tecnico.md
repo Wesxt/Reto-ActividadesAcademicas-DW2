@@ -1,5 +1,7 @@
 # INFORME TÉCNICO DE ARQUITECTURA Y DESARROLLO
+
 ## RETO INTEGRADOR: PLATAFORMA UNICAMPUS
+
 ### GESTIÓN DE ACTIVIDADES ACADÉMICAS EN ARQUITECTURA DE TRES CAPAS CON PATRÓN MVP
 
 ---
@@ -10,11 +12,13 @@
 **Asignatura:** Desarrollo de Aplicaciones Web II  
 **Docente:** Ing. Cindy Fuentes  
 **Estudiantes:** Arnold Beleño Zuletta y Jazid Kamell Vásquez
-**Fecha:** Noviembre de 2026  
+
+**Fecha:** Noviembre de 2026
 
 ---
 
 ## 1. INTRODUCCIÓN Y CONTEXTO DEL PROYECTO
+
 El desarrollo de soluciones web mantenibles, escalables y seguras exige la aplicación de patrones arquitectónicos que promuevan la separación estricta de responsabilidades. Históricamente, el modelo clásico de desarrollo en ASP.NET Web Forms tendía a concentrar la lógica de interfaz, reglas de negocio y sentencias SQL en el archivo *code-behind* (`.aspx.cs`), generando un alto acoplamiento conocido como código espagueti.
 
 El presente proyecto integrador tiene como propósito la reestructuración y evolución técnica de un formulario monolítico existente hacia una **Arquitectura de Software en Tres Capas (Presentación, Negocio y Datos)**, integrando el patrón de presentación **Model-View-Presenter (MVP)**, consultas parametrizadas con **ADO.NET** y una base de datos relacional robusta en **Microsoft SQL Server**.
@@ -65,7 +69,7 @@ El sistema implementa un control de acceso basado en roles (**RBAC - Role-Based 
 | **Editar y Actualizar Actividades** | ❌ Denegado | ✅ Sí | ✅ Sí |
 | **Inscribir a otros participantes** | ❌ Denegado | ✅ Sí | ✅ Sí |
 | **Cancelar inscripción de terceros** | ❌ Denegado | ✅ Sí | ✅ Sí |
-| **Publicar Reseñas y Calificaciones**| ✅ Sí (1-5 ★) | ✅ Sí | ✅ Sí |
+| **Publicar Reseñas y Calificaciones** | ✅ Sí (1-5 ★) | ✅ Sí | ✅ Sí |
 | **Eliminar Reseña propia** | ✅ Sí | ✅ Sí | ✅ Sí |
 | **Moderar / Eliminar Reseña ajena** | ❌ Denegado | ❌ Denegado | ✅ Sí (Global) |
 | **Eliminar Actividad Académica** | ❌ Denegado | ✅ Sí | ✅ Sí (Global) |
@@ -74,7 +78,9 @@ El sistema implementa un control de acceso basado en roles (**RBAC - Role-Based 
 | **Gestión de Catálogo de Tipos** | ❌ Denegado | ❌ Denegado | ✅ **Exclusivo** |
 
 ### 3.1 Capacidades Exclusivas del Administrador
+
 A diferencia del docente (cuyo alcance es pedagógico y operativo sobre sus eventos), el **Administrador** posee superpoderes de gobernanza global:
+
 1. **Pestaña Administrativa:** Acceso directo al *Panel de Control de Administrador* mediante un conmutador de navegación en la cabecera.
 2. **Gobernanza de Cuentas y Roles:** Puede listar todas las cuentas registradas en la base de datos y cambiar dinámicamente el rol de cualquier usuario (`Estudiante`, `Docente`, `Administrador`) mediante un menú desplegable y botón de confirmación.
 3. **Reglas de Seguridad y Auto-Protección:**
@@ -129,6 +135,7 @@ sequenceDiagram
 El modelo de datos relacional se crea mediante el script reproducible **`03_BaseDatos.sql`**, incorporando claves primarias `IDENTITY`, claves foráneas con eliminación en cascada donde corresponde, restricciones de chequeo (`CHECK`) y restricciones de unicidad (`UNIQUE`).
 
 ### 5.1 Diccionario de Tablas Principales
+
 - **`dbo.Usuario`:** Cuentas con nombre, correo institucional (`UNIQUE`), contraseña (`Clave`), programa académico, rol (`Estudiante`, `Docente`, `Administrador`) y teléfono.
 - **`dbo.TipoActividad`:** Catálogo de categorías (Taller, Conferencia, Seminario, Simposio, Webinar, etc.).
 - **`dbo.ActividadAcademica`:** Entidad central que registra los eventos formativos con título, descripción, tipo, fechas, horario, modalidad, lugar, cupos disponibles y estado.
@@ -142,6 +149,7 @@ El modelo de datos relacional se crea mediante el script reproducible **`03_Base
 Para transferir la base de datos `UniCampusDB` desde su equipo local a otro equipo sin sufrir errores de versión, permisos ni rutas de archivos `.mdf`/`.ldf`, siga este procedimiento documentado:
 
 ### Método Recomendado (100% Portable): Generación de Script con Esquema y Datos
+
 1. Abra **SQL Server Management Studio (SSMS)**.
 2. En el *Explorador de objetos*, haga clic derecho sobre la base de datos `UniCampusDB`.
 3. Seleccione **Tareas (Tasks)** $\rightarrow$ **Generar scripts... (Generate Scripts...)**.
