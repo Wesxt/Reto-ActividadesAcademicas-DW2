@@ -9,7 +9,7 @@
 **Programa:** Ingeniería de Sistemas  
 **Asignatura:** Desarrollo de Aplicaciones Web II  
 **Docente:** Ing. Cindy Fuentes  
-**Estudiante:** Arnold Beleño Zuletta  
+**Estudiantes:** Arnold Beleño Zuletta y Jazid Kamell Vásquez
 **Fecha:** Noviembre de 2026  
 
 ---
