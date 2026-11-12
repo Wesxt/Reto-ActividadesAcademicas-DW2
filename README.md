@@ -3,7 +3,7 @@
 ## Proyecto Integrador - Desarrollo de Aplicaciones Web II
 **Corporación Universitaria Americana**  
 **Docente:** Ing. Cindy Fuentes  
-**Estudiante:** Arnold Beleño Zuletta  
+**Estudiantes:** Arnold Beleño Zuletta y Jazid Kamell Vásquez
 
 ---
 
@@ -83,7 +83,7 @@ En el archivo `UniCampus.Web/Web.config`, verifique que la cadena de conexión c
 *(Por defecto se utiliza autenticación integrada de Windows con la instancia predeterminada `.`)*.
 
 ### 3. Abrir y Ejecutar en Visual Studio
-1. Abra la solución [`UniCampus.sln`](file:///F:/Proyectos/CRUD%20-%20Arnold%20Beleño%20Zuletta%20(1)/WebApplication4/UniCampus.sln) en **Visual Studio 2022 o 2026**.
+1. Abra la solución `UniCampus.sln` en **Visual Studio 2022 o 2026**.
 2. Establezca el proyecto `UniCampus.Web` (o `WebApplication4`) como **Proyecto de Inicio** (clic derecho $\rightarrow$ *Establecer como proyecto de inicio*).
 3. Presione **F5** o el botón verde **IIS Express**.
 4. La aplicación iniciará en la pantalla de autenticación: `https://localhost:44321/login.aspx`.
