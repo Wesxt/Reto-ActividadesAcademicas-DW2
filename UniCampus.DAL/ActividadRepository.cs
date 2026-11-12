@@ -40,7 +40,7 @@ namespace UniCampus.DAL
                 query += " AND (FechaInicio <= @Fecha AND FechaFin >= @Fecha) ";
             }
 
-            query += " ORDER BY FechaInicio ASC, HoraInicio ASC;";
+            query += " ORDER BY ActividadId ASC;";
 
             using (var con = ConexionDb.CrearConexion())
             using (var cmd = new SqlCommand(query, con))

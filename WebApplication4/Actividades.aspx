@@ -5,342 +5,734 @@
 <head runat="server">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gestión de Actividades Académicas</title>
+    <title>UniCampus | Sistema de Gestión Académica</title>
     <style>
-        * { box-sizing: border-box; }
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #f4f4f5;
-            color: #18181b;
-            font-size: 12.5px;
-            line-height: 1.35;
+        :root {
+            --navy-header: #0e1b38;
+            --navy-sidebar: #0c1736;
+            --blue-primary: #2563eb;
+            --blue-hover: #1d4ed8;
+            --bg-canvas: #f0f4f9;
+            --card-bg: #ffffff;
+            --border-card: #e2e8f0;
+            --border-light: #f1f5f9;
+            --text-heading: #0d234a;
+            --text-body: #1e293b;
+            --text-muted: #64748b;
         }
 
-        /* Top Bar */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-canvas);
+            color: var(--text-body);
+            font-size: 13px;
+            line-height: 1.45;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 1. TOP NAVBAR */
         .topbar {
-            background: #18181b;
-            color: #fafafa;
-            height: 36px;
-            padding: 0 12px;
+            background-color: var(--navy-header);
+            color: #ffffff;
+            height: 64px;
+            padding: 0 24px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid #27272a;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         }
         .topbar-brand {
-            font-weight: 700;
-            font-size: 13px;
-            letter-spacing: -0.2px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: #ffffff;
         }
-        .topbar-user {
+        .brand-icon-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+        }
+        .brand-titles {
+            display: flex;
+            flex-direction: column;
+        }
+        .brand-main-title {
+            font-size: 19px;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+            line-height: 1.1;
+        }
+        .brand-sub-title {
+            font-size: 11.5px;
+            color: #94a3b8;
+            font-weight: 400;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+        }
+        .user-widget {
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 12px;
-            color: #d4d4d8;
+            padding: 2px 4px;
+            user-select: none;
         }
-        .btn-logout {
-            background: #27272a;
-            color: #fafafa;
-            border: 1px solid #3f3f46;
-            padding: 2px 8px;
-            border-radius: 3px;
+        .avatar-circle {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: #3b82f6;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 13px;
+        }
+        .user-text-meta {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+        .user-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        .user-role {
+            font-size: 11px;
+            color: #93c5fd;
+        }
+
+        /* 2. LAYOUT WRAPPER */
+        .app-body {
+            display: flex;
+            flex: 1;
+            min-height: calc(100vh - 64px);
+        }
+
+        /* 3. SIDEBAR */
+        .sidebar {
+            width: 230px;
+            background-color: var(--navy-sidebar);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 16px 12px;
+            flex-shrink: 0;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            color: #cbd5e1;
             text-decoration: none;
-            font-size: 11.5px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.15s ease;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: left;
             cursor: pointer;
         }
-        .btn-logout:hover {
-            background: #dc2626;
-            border-color: #dc2626;
-            color: #fff;
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+        }
+        .nav-item.active {
+            background-color: var(--blue-primary);
+            color: #ffffff;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+        }
+        .nav-icon {
+            width: 18px;
+            height: 18px;
+            stroke-width: 2;
+            flex-shrink: 0;
+        }
+        .sidebar-bottom {
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .logout-btn {
+            color: #f87171 !important;
+        }
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.15) !important;
+            color: #ffffff !important;
         }
 
-        /* KPI Strip */
-        .kpi-strip {
-            background: #ffffff;
-            border-bottom: 1px solid #d4d4d8;
-            padding: 5px 12px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            font-size: 12px;
-        }
-        .kpi-item {
-            display: flex;
-            align-items: baseline;
-            gap: 5px;
-            color: #52525b;
-        }
-        .kpi-val {
-            font-weight: 700;
-            font-size: 13px;
-            color: #09090b;
+        /* 4. MAIN CONTENT */
+        .main-canvas {
+            flex: 1;
+            padding: 24px 30px;
+            overflow-y: auto;
         }
 
-        /* Alerts */
-        .alert-bar {
-            margin: 8px 12px 0 12px;
-            padding: 6px 10px;
-            border-radius: 3px;
-            font-size: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        /* Top Heading */
+        .page-header {
+            margin-bottom: 20px;
         }
-        .alert-ok {
-            background: #f0fdf4;
-            border: 1px solid #bbf7d0;
-            color: #166534;
+        .page-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-heading);
+            letter-spacing: -0.4px;
+            margin-bottom: 4px;
         }
-        .alert-err {
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            color: #991b1b;
+        .page-subtitle {
+            font-size: 13.5px;
+            color: var(--text-muted);
         }
 
-        /* Workspace Grid */
-        .workspace {
-            padding: 8px 12px;
+        /* KPI Strip & Banner Row */
+        .kpi-banner-row {
             display: grid;
-            grid-template-columns: 310px 1fr;
+            grid-template-columns: repeat(4, 1fr) 300px;
+            gap: 14px;
+            margin-bottom: 22px;
+            align-items: stretch;
+        }
+        @media (max-width: 1200px) {
+            .kpi-banner-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .banner-students-card {
+                grid-column: span 2;
+            }
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-card);
+            border-radius: 12px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        }
+        .stat-icon-wrap {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .icon-blue { background: #eff6ff; color: #2563eb; }
+        .icon-green { background: #ecfdf5; color: #10b981; }
+        .icon-orange { background: #fffbeb; color: #f59e0b; }
+        .icon-red { background: #fef2f2; color: #ef4444; }
+
+        .stat-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .stat-number {
+            font-size: 22px;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1.1;
+        }
+        .stat-label {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            margin-top: 3px;
+            font-weight: 500;
+        }
+
+        .banner-students-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
+            border: 1px solid #dbeafe;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+        }
+        .banner-students-card img {
+            width: 100%;
+            height: 100%;
+            max-height: 80px;
+            object-fit: contain;
+        }
+
+        /* Notifications & Alerts */
+        .toast-msg {
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 12.5px;
+            display: flex;
+            align-items: center;
             gap: 10px;
+        }
+        .toast-ok { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+        .toast-err { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+
+        /* MIDDLE SECTION: 2 COLUMNS (Form + Table) */
+        .grid-middle {
+            display: grid;
+            grid-template-columns: 440px 1fr;
+            gap: 20px;
+            margin-bottom: 22px;
             align-items: start;
         }
-        @media (max-width: 960px) {
-            .workspace { grid-template-columns: 1fr; }
+        .grid-middle.solo-tabla {
+            grid-template-columns: 1fr;
+        }
+        @media (max-width: 1024px) {
+            .grid-middle { grid-template-columns: 1fr; }
         }
 
-        /* Panels */
-        .box {
-            background: #ffffff;
-            border: 1px solid #d4d4d8;
-            border-radius: 3px;
+        /* Standard Modern Card */
+        .app-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-card);
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
         }
-        .box-header {
-            padding: 6px 10px;
-            border-bottom: 1px solid #e4e4e7;
-            background: #fafafa;
+        .card-header-styled {
+            padding: 14px 18px;
+            border-bottom: 1px solid #eef2f6;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            font-weight: 700;
-            font-size: 12.5px;
-            color: #09090b;
+            justify-content: space-between;
+            background: #ffffff;
         }
-        .box-body {
-            padding: 8px 10px;
+        .header-title-flex {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header-circle-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #eff6ff;
+            color: #2563eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .header-title-text {
+            font-size: 14px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .card-body-styled {
+            padding: 16px 18px;
         }
 
-        /* Compact Forms */
-        .f-group {
-            margin-bottom: 6px;
-        }
-        .f-row-2 {
+        /* Form Inputs */
+        .form-grid-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 6px;
-            margin-bottom: 6px;
+            gap: 12px;
+            margin-bottom: 12px;
         }
-        .f-row-3 {
+        .form-grid-row-3 {
             display: grid;
-            grid-template-columns: 70px 1fr 100px;
-            gap: 6px;
-            margin-bottom: 6px;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
         }
-        .f-label {
-            display: block;
-            font-size: 11px;
+        .field-box {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 12px;
+        }
+        .field-label {
+            font-size: 11.5px;
             font-weight: 600;
-            color: #3f3f46;
-            margin-bottom: 2px;
+            color: #334155;
         }
-        .f-input, .f-select {
+        .field-req {
+            color: #ef4444;
+        }
+        .form-input, .form-select {
             width: 100%;
-            padding: 4px 6px;
-            font-size: 12px;
+            padding: 7px 10px;
+            font-size: 12.5px;
             border: 1px solid #cbd5e1;
-            border-radius: 3px;
-            background: #fff;
-            color: #09090b;
-            font-family: inherit;
-        }
-
-        textarea.f-input {
-            resize: vertical;
-        }
-
-        .f-input:focus, .f-select:focus {
+            border-radius: 6px;
+            color: #0f172a;
+            background: #ffffff;
             outline: none;
-            border-color: #18181b;
+            transition: border-color 0.15s, box-shadow 0.15s;
         }
-        .val-err {
-            color: #dc2626;
-            font-size: 10.5px;
-            display: block;
+        .form-input:focus, .form-select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+        textarea.form-input {
+            resize: vertical;
+            min-height: 60px;
         }
 
         /* Buttons */
-        .btn {
-            display: inline-block;
-            padding: 4px 10px;
+        .btn-primary-blue {
+            background-color: var(--blue-primary);
+            color: #ffffff;
+            border: 1px solid var(--blue-hover);
+            padding: 8px 16px;
+            font-size: 12.5px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.15s;
+        }
+        .btn-primary-blue:hover {
+            background-color: var(--blue-hover);
+        }
+        .btn-light-outline {
+            background-color: #ffffff;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+            padding: 8px 16px;
+            font-size: 12.5px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+        }
+        .btn-light-outline:hover {
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+        .btn-green-sm {
+            background-color: #16a34a;
+            color: #ffffff;
+            border: 1px solid #15803d;
+            padding: 5px 12px;
             font-size: 12px;
             font-weight: 600;
-            border-radius: 3px;
-            border: 1px solid transparent;
+            border-radius: 6px;
             cursor: pointer;
-            text-decoration: none;
-            line-height: 1.3;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: background 0.15s;
         }
-        .btn-dark {
-            background: #18181b;
-            color: #ffffff;
-            border-color: #18181b;
+        .btn-green-sm:hover {
+            background-color: #15803d;
         }
-        .btn-dark:hover { background: #27272a; }
-        .btn-light {
-            background: #ffffff;
-            color: #3f3f46;
-            border-color: #cbd5e1;
-        }
-        .btn-light:hover { background: #f4f4f5; }
-        .btn-sm {
-            padding: 2px 6px;
-            font-size: 11px;
-        }
-        .btn-danger-sm {
-            background: #fff;
-            color: #b91c1c;
-            border: 1px solid #fca5a5;
-            padding: 2px 6px;
-            font-size: 11px;
-            border-radius: 2px;
-            text-decoration: none;
-        }
-        .btn-danger-sm:hover { background: #fef2f2; }
 
-        /* Filter Bar */
-        .filter-bar {
-            padding: 6px 10px;
-            border-bottom: 1px solid #e4e4e7;
+        /* Table Styling */
+        .table-search-wrap {
             display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
             align-items: center;
             background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 4px 8px;
+            width: 220px;
+        }
+        .table-search-input {
+            border: none;
+            outline: none;
+            font-size: 12px;
+            color: #0f172a;
+            width: 100%;
+            background: transparent;
+        }
+        .table-search-btn {
+            background: none;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 0;
+        }
+        .table-search-btn:hover {
+            color: #2563eb;
         }
 
-        /* Tables */
-        .tbl {
+        .data-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 12px;
+            font-size: 12.5px;
         }
-        .tbl th {
-            background: #f4f4f5;
-            color: #3f3f46;
+        .data-table th {
+            background: #f8fafc;
+            color: #64748b;
             font-weight: 600;
             text-align: left;
-            padding: 5px 8px;
-            border-bottom: 1px solid #d4d4d8;
-            font-size: 11px;
+            padding: 10px 12px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 11.5px;
             text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
-        .tbl td {
-            padding: 5px 8px;
-            border-bottom: 1px solid #e4e4e7;
+        .data-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #1e293b;
             vertical-align: middle;
         }
-        .tbl tr:hover td {
-            background-color: #fafafa;
+        .data-table tr:hover td {
+            background-color: #f8fafc;
         }
 
-        /* Status Tags */
-        .tag {
+        /* Status Pills */
+        .badge-pill {
             display: inline-block;
-            padding: 1px 6px;
-            border-radius: 2px;
-            font-size: 11px;
-            font-weight: 600;
-            border: 1px solid transparent;
-        }
-        .tag-activa { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
-        .tag-proxima { background: #fffbeb; color: #b45309; border-color: #fde68a; }
-        .tag-finalizada { background: #f4f4f5; color: #52525b; border-color: #d4d4d8; }
-        .tag-tipo { background: #f8fafc; color: #334155; border-color: #cbd5e1; }
-        .tag-estudiante { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
-        .tag-docente { background: #faf5ff; color: #7e22ce; border-color: #e9d5ff; }
-        .tag-administrador { background: #fff7ed; color: #c2410c; border-color: #fed7aa; }
-
-        /* Admin Nav Tabs & Admin View */
-        .sub-nav {
-            display: flex;
-            gap: 6px;
-            padding: 4px 12px;
-            background: #ffffff;
-            border-bottom: 1px solid #e4e4e7;
-        }
-        .tab-btn {
-            background: transparent;
-            border: 1px solid transparent;
-            padding: 4px 10px;
+            padding: 3px 12px;
+            border-radius: 9999px;
             font-size: 11.5px;
             font-weight: 600;
-            cursor: pointer;
-            border-radius: 3px;
-            color: #52525b;
-            text-decoration: none;
+            text-align: center;
+            line-height: 1.35;
         }
-        .tab-btn:hover {
-            background: #f4f4f5;
-            color: #18181b;
+        .badge-activa {
+            background-color: #dcfce7;
+            color: #15803d;
         }
-        .tab-btn-active {
-            background: #18181b;
-            color: #ffffff !important;
-            border-color: #18181b;
+        .badge-proxima {
+            background-color: #fef3c7;
+            color: #b45309;
         }
-        .admin-grid {
-            display: grid;
-            grid-template-columns: 1.4fr 1fr;
-            gap: 8px;
-            padding: 8px 12px;
+        .badge-finalizada {
+            background-color: #f1f5f9;
+            color: #475569;
         }
-        @media (max-width: 1024px) {
-            .admin-grid { grid-template-columns: 1fr; }
+        .badge-cancelada {
+            background-color: #fee2e2;
+            color: #b91c1c;
+        }
+        .badge-tipo {
+            background-color: #eff6ff;
+            color: #2563eb;
         }
 
-        /* Bottom 3-Column Inspector */
-        .inspector-grid {
+        /* Table Action Buttons */
+        .table-actions-flex {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .action-sq-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            color: #ffffff !important;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: opacity 0.15s, transform 0.05s;
+        }
+        .action-sq-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        .btn-action-view { background-color: #2563eb; }
+        .btn-action-edit { background-color: #3b82f6; }
+        .btn-action-delete { background-color: #ef4444; }
+
+        /* Table Pagination & Foot */
+        .table-footer-bar {
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid #f1f5f9;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        .pagination-ctrls {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .page-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 11.5px;
+            color: #475569;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+        }
+        .page-num.active {
+            background-color: #2563eb;
+            color: #ffffff;
+            border-color: #2563eb;
+            font-weight: 600;
+        }
+
+        /* BOTTOM ROW: 3 CARDS */
+        .grid-bottom-3 {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 8px;
-            margin-top: 8px;
+            grid-template-columns: 1fr 1.15fr 1fr;
+            gap: 20px;
+            align-items: stretch;
+            margin-bottom: 24px;
         }
         @media (max-width: 1100px) {
-            .inspector-grid { grid-template-columns: 1fr; }
+            .grid-bottom-3 { grid-template-columns: 1fr; }
         }
-        .kv-table {
+
+        /* Card 1: Details Key-Value */
+        .kv-row {
+            display: flex;
+            padding: 6px 0;
+            border-bottom: 1px solid #f8fafc;
+            font-size: 12px;
+        }
+        .kv-title {
+            width: 90px;
+            font-weight: 700;
+            color: #0f172a;
+            flex-shrink: 0;
+        }
+        .kv-value {
+            color: #334155;
+            flex: 1;
+        }
+
+        /* Card 3: Student View */
+        .preview-img-box {
             width: 100%;
-            border-collapse: collapse;
+            height: 125px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            background: #1e293b;
+        }
+        .preview-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .preview-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+        .preview-badges {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+        .preview-meta-list {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-bottom: 10px;
             font-size: 12px;
-            margin-bottom: 8px;
+            color: #475569;
         }
-        .kv-table td {
-            padding: 3px 4px;
-            border-bottom: 1px solid #f4f4f5;
+        .preview-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .kv-key {
-            color: #71717a;
+        .preview-desc {
+            font-size: 11.5px;
+            color: #64748b;
+            line-height: 1.4;
+            margin-bottom: 14px;
+        }
+        .btn-inscribirme {
+            width: 100%;
+            background-color: var(--blue-primary);
+            color: #ffffff;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 7px;
+            font-size: 13px;
             font-weight: 600;
-            width: 85px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.15s;
         }
-        .empty-notice {
-            padding: 12px;
-            text-align: center;
-            color: #71717a;
-            font-size: 12px;
+        .btn-inscribirme:hover {
+            background-color: var(--blue-hover);
+        }
+        .btn-inscribirme:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+            opacity: 0.75;
+        }
+
+        /* Admin Pill Nav */
+        .admin-nav-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .tab-pill {
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 12.5px;
+            font-weight: 600;
+            text-decoration: none;
+            color: #475569;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            cursor: pointer;
+        }
+        .tab-pill.active {
+            background-color: #0f172a;
+            color: #ffffff;
+            border-color: #0f172a;
+        }
+        .admin-cards-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 16px;
+        }
+        @media (max-width: 1024px) {
+            .admin-cards-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -348,382 +740,759 @@
     <form id="form1" runat="server">
         <asp:ScriptManager ID="ScriptManager1" runat="server" />
 
-        <!-- Slim Header Bar -->
+        <!-- 1. TOP NAVBAR -->
         <header class="topbar">
-            <div class="topbar-brand">UniCampus // Registro de Actividades Académicas</div>
-            <div class="topbar-user">
-                <span>
-                    Usuario: <strong><asp:Label ID="lblUsuarioNombre" runat="server" /></strong>
-                    (<asp:Label ID="lblUsuarioPrograma" runat="server" /> - <asp:Label ID="lblUsuarioRol" runat="server" />)
-                </span>
-                <asp:LinkButton ID="btnCerrarSesion" runat="server" CssClass="btn-logout" CausesValidation="false" OnClick="btnCerrarSesion_Click">Cerrar sesión</asp:LinkButton>
+            <a href="Actividades.aspx" class="topbar-brand">
+                <div class="brand-icon-wrap">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                        <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                    </svg>
+                </div>
+                <div class="brand-titles">
+                    <span class="brand-main-title">UniCampus</span>
+                    <span class="brand-sub-title">Sistema de Gestión Académica</span>
+                </div>
+            </a>
+
+            <div class="topbar-right">
+                <!-- User profile static display -->
+                <div class="user-widget">
+                    <div class="avatar-circle">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="7" r="4"/>
+                            <path d="M4 21v-2a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v2"/>
+                        </svg>
+                    </div>
+                    <div class="user-text-meta">
+                        <span class="user-name"><asp:Label ID="lblUsuarioNombre" runat="server" Text="María López" /></span>
+                        <span class="user-role"><asp:Label ID="lblUsuarioRol" runat="server" Text="Estudiante" /></span>
+                        <asp:Label ID="lblUsuarioPrograma" runat="server" style="display:none;" />
+                    </div>
+                </div>
             </div>
         </header>
 
-        <!-- Admin Navigation Tabs (Only visible for Administrador) -->
-        <asp:Panel ID="pnlAdminNav" runat="server" Visible="false" CssClass="sub-nav">
-            <asp:LinkButton ID="btnTabActividades" runat="server" CssClass="tab-btn tab-btn-active" CausesValidation="false" OnClick="btnTabActividades_Click">📋 Registro y Consulta de Actividades</asp:LinkButton>
-            <asp:LinkButton ID="btnTabAdmin" runat="server" CssClass="tab-btn" CausesValidation="false" OnClick="btnTabAdmin_Click">⚙️ Panel Administrador: Usuarios y Categorías</asp:LinkButton>
-        </asp:Panel>
+        <!-- 2. BODY LAYOUT (Sidebar + Main Area) -->
+        <div class="app-body">
+            <!-- LEFT SIDEBAR (Only active & real modules) -->
+            <aside class="sidebar">
+                <nav class="sidebar-menu">
+                    <a href="Actividades.aspx" class="nav-item active">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        <span>Actividades Académicas</span>
+                    </a>
+                </nav>
 
-        <!-- Compact KPI Strip -->
-        <div class="kpi-strip">
-            <div class="kpi-item">Total actividades: <span class="kpi-val"><asp:Label ID="lblTotalActividades" runat="server" Text="0" /></span></div>
-            <div class="kpi-item">Inscripciones activas: <span class="kpi-val"><asp:Label ID="lblTotalInscritos" runat="server" Text="0" /></span></div>
-            <div class="kpi-item">Próximas: <span class="kpi-val"><asp:Label ID="lblActividadesProximas" runat="server" Text="0" /></span></div>
-            <div class="kpi-item">Finalizadas: <span class="kpi-val"><asp:Label ID="lblActividadesFinalizadas" runat="server" Text="0" /></span></div>
-        </div>
-
-        <!-- Alerts -->
-        <asp:Panel ID="pnlAlertExito" runat="server" Visible="false" CssClass="alert-bar alert-ok">
-            <span><strong>OK:</strong> <asp:Label ID="lblMensajeExito" runat="server" /></span>
-        </asp:Panel>
-
-        <asp:Panel ID="pnlAlertError" runat="server" Visible="false" CssClass="alert-bar alert-err">
-            <span><strong>Error:</strong> <asp:Label ID="lblMensajeError" runat="server" /></span>
-        </asp:Panel>
-
-        <!-- SECTION 1: Actividades Académicas -->
-        <asp:Panel ID="pnlSeccionActividades" runat="server">
-            <div class="workspace" id="workspaceContainer" runat="server">
-                <!-- Left Column: Compact Form -->
-                <asp:Panel ID="pnlFormularioCreacion" runat="server" CssClass="box">
-                <div class="box-header">
-                    <asp:Label ID="lblTituloFormulario" runat="server" Text="Registrar Actividad" />
-                    <asp:Label ID="lblModoEdicion" runat="server" CssClass="tag tag-proxima" Visible="false" Text="Editando" />
+                <div class="sidebar-bottom">
+                    <asp:LinkButton ID="btnCerrarSesion" runat="server" CssClass="nav-item logout-btn" CausesValidation="false" OnClick="btnCerrarSesion_Click">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                        <span>Cerrar sesión</span>
+                    </asp:LinkButton>
                 </div>
-                <div class="box-body">
-                    <asp:HiddenField ID="hfActividadId" runat="server" Value="0" />
+            </aside>
 
-                    <div class="f-group">
-                        <label class="f-label">Título *</label>
-                        <asp:TextBox ID="txtTitulo" runat="server" CssClass="f-input" MaxLength="120" />
-                        <asp:RequiredFieldValidator ID="rfvTitulo" runat="server" ControlToValidate="txtTitulo" ErrorMessage="Título obligatorio." CssClass="val-err" Display="Dynamic" ValidationGroup="vgActividad" />
-                    </div>
-
-                    <div class="f-row-2">
-                        <div>
-                            <label class="f-label">Tipo *</label>
-                            <asp:DropDownList ID="ddlTipo" runat="server" CssClass="f-select" />
-                        </div>
-                        <div>
-                            <label class="f-label">Modalidad *</label>
-                            <asp:DropDownList ID="ddlModalidad" runat="server" CssClass="f-select">
-                                <asp:ListItem Text="Presencial" Value="Presencial" Selected="True" />
-                                <asp:ListItem Text="Virtual" Value="Virtual" />
-                                <asp:ListItem Text="Híbrida" Value="Híbrida" />
-                            </asp:DropDownList>
-                        </div>
-                    </div>
-
-                    <div class="f-group">
-                        <label class="f-label">Descripción</label>
-                        <asp:TextBox ID="txtDescripcion" runat="server" TextMode="MultiLine" Rows="2" CssClass="f-input" MaxLength="1000" />
-                    </div>
-
-                    <div class="f-row-2">
-                        <div>
-                            <label class="f-label">Fecha inicio *</label>
-                            <asp:TextBox ID="txtFechaInicio" runat="server" TextMode="Date" CssClass="f-input" />
-                            <asp:RequiredFieldValidator ID="rfvFechaInicio" runat="server" ControlToValidate="txtFechaInicio" ErrorMessage="Requerida." CssClass="val-err" Display="Dynamic" ValidationGroup="vgActividad" />
-                        </div>
-                        <div>
-                            <label class="f-label">Fecha fin *</label>
-                            <asp:TextBox ID="txtFechaFin" runat="server" TextMode="Date" CssClass="f-input" />
-                        </div>
-                    </div>
-
-                    <div class="f-row-2">
-                        <div>
-                            <label class="f-label">Hora inicio *</label>
-                            <asp:TextBox ID="txtHoraInicio" runat="server" TextMode="Time" CssClass="f-input" Text="08:00" />
-                        </div>
-                        <div>
-                            <label class="f-label">Hora fin *</label>
-                            <asp:TextBox ID="txtHoraFin" runat="server" TextMode="Time" CssClass="f-input" Text="10:00" />
-                        </div>
-                    </div>
-
-                    <div class="f-row-3">
-                        <div>
-                            <label class="f-label">Cupos *</label>
-                            <asp:TextBox ID="txtCupos" runat="server" TextMode="Number" CssClass="f-input" Text="30" />
-                            <asp:RangeValidator ID="rvCupos" runat="server" ControlToValidate="txtCupos" MinimumValue="0" MaximumValue="9999" Type="Integer" ErrorMessage=">= 0" CssClass="val-err" Display="Dynamic" ValidationGroup="vgActividad" />
-                        </div>
-                        <div>
-                            <label class="f-label">Lugar *</label>
-                            <asp:TextBox ID="txtLugar" runat="server" CssClass="f-input" MaxLength="150" />
-                            <asp:RequiredFieldValidator ID="rfvLugar" runat="server" ControlToValidate="txtLugar" ErrorMessage="Requerido." CssClass="val-err" Display="Dynamic" ValidationGroup="vgActividad" />
-                        </div>
-                        <div>
-                            <label class="f-label">Estado *</label>
-                            <asp:DropDownList ID="ddlEstado" runat="server" CssClass="f-select">
-                                <asp:ListItem Text="Activa" Value="Activa" Selected="True" />
-                                <asp:ListItem Text="Próxima" Value="Próxima" />
-                                <asp:ListItem Text="Finalizada" Value="Finalizada" />
-                                <asp:ListItem Text="Cancelada" Value="Cancelada" />
-                            </asp:DropDownList>
-                        </div>
-                    </div>
-
-                    <div style="display: flex; gap: 6px; margin-top: 8px;">
-                        <asp:Button ID="btnGuardar" runat="server" Text="Guardar" CssClass="btn btn-dark" style="flex: 1;" ValidationGroup="vgActividad" OnClick="btnGuardar_Click" />
-                        <asp:Button ID="btnLimpiar" runat="server" Text="Limpiar" CssClass="btn btn-light" CausesValidation="false" OnClick="btnLimpiar_Click" />
-                    </div>
-                </div>
-            </asp:Panel>
-
-            <!-- Right Column: List + Inspector -->
-            <div>
-                <div class="box">
-                    <div class="box-header">
-                        <span>Listado de Actividades Académicas</span>
-                    </div>
-
-                    <!-- Multi-Filter Bar -->
-                    <div class="filter-bar">
-                        <asp:TextBox ID="txtBuscar" runat="server" CssClass="f-input" style="width: 180px;" placeholder="Título, descripción o lugar..." />
-                        <asp:DropDownList ID="ddlFiltroTipo" runat="server" CssClass="f-select" style="width: 125px;">
-                            <asp:ListItem Text="Tipo: Todos" Value="Todos" />
-                        </asp:DropDownList>
-                        <asp:DropDownList ID="ddlFiltroEstado" runat="server" CssClass="f-select" style="width: 125px;">
-                            <asp:ListItem Text="Estado: Todos" Value="Todos" />
-                            <asp:ListItem Text="Activa" Value="Activa" />
-                            <asp:ListItem Text="Próxima" Value="Próxima" />
-                            <asp:ListItem Text="Finalizada" Value="Finalizada" />
-                            <asp:ListItem Text="Cancelada" Value="Cancelada" />
-                        </asp:DropDownList>
-                        <asp:TextBox ID="txtFiltroFecha" runat="server" TextMode="Date" CssClass="f-input" style="width: 130px;" ToolTip="Filtrar por fecha" />
-                        <asp:Button ID="btnBuscar" runat="server" Text="Filtrar" CssClass="btn btn-dark btn-sm" CausesValidation="false" OnClick="btnBuscar_Click" />
-                        <asp:Button ID="btnRestablecer" runat="server" Text="Restablecer" CssClass="btn btn-light btn-sm" CausesValidation="false" OnClick="btnRestablecer_Click" />
-                    </div>
-
-                    <!-- Table -->
-                    <div style="overflow-x: auto;">
-                        <asp:GridView ID="gvActividades" runat="server" AutoGenerateColumns="False"
-                            CssClass="tbl" GridLines="None" DataKeyNames="ActividadId" OnRowCommand="gvActividades_RowCommand">
-                            <Columns>
-                                <asp:BoundField DataField="ActividadId" HeaderText="ID" />
-                                <asp:BoundField DataField="Titulo" HeaderText="Título" ItemStyle-Font-Bold="true" />
-                                <asp:BoundField DataField="Tipo" HeaderText="Tipo" />
-                                <asp:TemplateField HeaderText="Fecha">
-                                    <ItemTemplate><%# Eval("FechasFormateadas") %></ItemTemplate>
-                                </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Horario">
-                                    <ItemTemplate><%# Eval("HorarioFormateado") %></ItemTemplate>
-                                </asp:TemplateField>
-                                <asp:BoundField DataField="Lugar" HeaderText="Lugar" />
-                                <asp:BoundField DataField="Modalidad" HeaderText="Modalidad" />
-                                <asp:BoundField DataField="Cupos" HeaderText="Cupos" />
-                                <asp:TemplateField HeaderText="Estado">
-                                    <ItemTemplate><%# ObtenerBadgeEstado(Eval("Estado").ToString()) %></ItemTemplate>
-                                </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Acciones">
-                                    <ItemTemplate>
-                                        <asp:LinkButton ID="btnVer" runat="server" CommandName="VerDetalle" CommandArgument='<%# Eval("ActividadId") %>' CssClass="btn btn-light btn-sm">Ver</asp:LinkButton>
-                                        <asp:LinkButton ID="btnEditar" runat="server" CommandName="EditarActividad" CommandArgument='<%# Eval("ActividadId") %>' CssClass="btn btn-light btn-sm" Visible='<%# PuedeGestionar() %>'>Editar</asp:LinkButton>
-                                        <asp:LinkButton ID="btnEliminar" runat="server" CommandName="EliminarActividad" CommandArgument='<%# Eval("ActividadId") %>' CssClass="btn-danger-sm" Visible='<%# PuedeGestionar() %>' OnClientClick="return confirm('¿Eliminar esta actividad?');">Borrar</asp:LinkButton>
-                                    </ItemTemplate>
-                                </asp:TemplateField>
-                            </Columns>
-                            <EmptyDataTemplate>
-                                <div class="empty-notice">No existen actividades registradas en la base de datos.</div>
-                            </EmptyDataTemplate>
-                        </asp:GridView>
-                    </div>
+            <!-- MAIN CANVAS -->
+            <main class="main-canvas">
+                <!-- Header -->
+                <div class="page-header">
+                    <h1 class="page-title">Registro de Actividades Académicas</h1>
+                    <p class="page-subtitle">Administra, registra y consulta las actividades académicas de la institución.</p>
                 </div>
 
-                <!-- Empty Inspector State (shown when 0 activities exist or none selected) -->
-                <asp:Panel ID="pnlSinSeleccion" runat="server" CssClass="box" style="margin-top: 8px;">
-                    <div class="empty-notice">Seleccione o registre una actividad para consultar sus detalles, gestionar inscripciones y publicar reseñas.</div>
+                <!-- Admin Tabs (Visible for Administrador) -->
+                <asp:Panel ID="pnlAdminNav" runat="server" Visible="false" CssClass="admin-nav-bar">
+                    <asp:LinkButton ID="btnTabActividades" runat="server" CssClass="tab-pill active" CausesValidation="false" OnClick="btnTabActividades_Click">📋 Registro y Consulta</asp:LinkButton>
+                    <asp:LinkButton ID="btnTabAdmin" runat="server" CssClass="tab-pill" CausesValidation="false" OnClick="btnTabAdmin_Click">⚙️ Panel Administrador: Usuarios y Categorías</asp:LinkButton>
                 </asp:Panel>
 
-                <!-- Inspector Grid (ONLY visible when a real database activity is selected) -->
-                <asp:Panel ID="pnlDetalleActividad" runat="server" Visible="false" CssClass="inspector-grid">
-                    <!-- 1. Ficha Técnica e Inscripción Personal -->
-                    <div class="box">
-                        <div class="box-header">
-                            <span>Detalle de Actividad</span>
-                            <asp:Label ID="lblDetalleEstado" runat="server" />
-                        </div>
-                        <div class="box-body">
-                            <table class="kv-table">
-                                <tr><td class="kv-key">Título:</td><td><strong><asp:Label ID="lblDetalleTitulo" runat="server" /></strong></td></tr>
-                                <tr><td class="kv-key">Tipo:</td><td><asp:Label ID="lblDetalleTipo" runat="server" /></td></tr>
-                                <tr><td class="kv-key">Descripción:</td><td><asp:Label ID="lblDetalleDescripcion" runat="server" /></td></tr>
-                                <tr><td class="kv-key">Fechas:</td><td><asp:Label ID="lblDetalleFecha" runat="server" /></td></tr>
-                                <tr><td class="kv-key">Horario:</td><td><asp:Label ID="lblDetalleHora" runat="server" /></td></tr>
-                                <tr><td class="kv-key">Modalidad:</td><td><asp:Label ID="lblDetalleModalidad" runat="server" /></td></tr>
-                                <tr><td class="kv-key">Lugar:</td><td><asp:Label ID="lblDetalleLugar" runat="server" /></td></tr>
-                                <tr><td class="kv-key">Cupos disp.:</td><td><strong><asp:Label ID="lblDetalleCupos" runat="server" /></strong></td></tr>
-                            </table>
+                <!-- Alerts -->
+                <asp:Panel ID="pnlAlertExito" runat="server" Visible="false" CssClass="toast-msg toast-ok">
+                    <span><strong>Éxito:</strong> <asp:Label ID="lblMensajeExito" runat="server" /></span>
+                </asp:Panel>
+                <asp:Panel ID="pnlAlertError" runat="server" Visible="false" CssClass="toast-msg toast-err">
+                    <span><strong>Atención:</strong> <asp:Label ID="lblMensajeError" runat="server" /></span>
+                </asp:Panel>
 
-                            <asp:Button ID="btnEstudianteInscribirme" runat="server" Text="Inscribirme con mi cuenta" CssClass="btn btn-dark" style="width: 100%;" CausesValidation="false" OnClick="btnEstudianteInscribirme_Click" />
+                <!-- SECTION 1: ACTIVIDADES ACADÉMICAS -->
+                <asp:Panel ID="pnlSeccionActividades" runat="server">
+                    <!-- KPI Cards & Student Banner Illustration Row -->
+                    <div class="kpi-banner-row">
+                        <!-- Card 1: Total -->
+                        <div class="stat-card">
+                            <div class="stat-icon-wrap icon-blue">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-number"><asp:Label ID="lblTotalActividades" runat="server" Text="12" /></span>
+                                <span class="stat-label">Total de actividades</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 2: Estudiantes Inscritos -->
+                        <div class="stat-card">
+                            <div class="stat-icon-wrap icon-green">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-number"><asp:Label ID="lblTotalInscritos" runat="server" Text="340" /></span>
+                                <span class="stat-label">Estudiantes inscritos</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 3: Actividades Próximas -->
+                        <div class="stat-card">
+                            <div class="stat-icon-wrap icon-orange">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-number"><asp:Label ID="lblActividadesProximas" runat="server" Text="8" /></span>
+                                <span class="stat-label">Actividades próximas</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 4: Actividades Finalizadas -->
+                        <div class="stat-card">
+                            <div class="stat-icon-wrap icon-red">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-number"><asp:Label ID="lblActividadesFinalizadas" runat="server" Text="4" /></span>
+                                <span class="stat-label">Actividades finalizadas</span>
+                            </div>
+                        </div>
+
+                        <!-- Banner Illustration -->
+                        <div class="banner-students-card">
+                            <img src="Content/images/students-banner.svg" alt="UniCampus Estudiantes" />
                         </div>
                     </div>
 
-                    <!-- 2. Participantes Inscritos -->
-                    <div class="box">
-                        <div class="box-header">
-                            <span>Participantes Inscritos (<asp:Label ID="lblConteoInscritos" runat="server" Text="0" />)</span>
-                        </div>
-                        <div class="box-body">
-                            <asp:Panel ID="pnlInscripcionManual" runat="server" style="display: flex; gap: 4px; margin-bottom: 6px;">
-                                <asp:DropDownList ID="ddlEstudianteInscribir" runat="server" CssClass="f-select" />
-                                <asp:Button ID="btnInscribirEstudiante" runat="server" Text="Inscribir" CssClass="btn btn-dark btn-sm" CausesValidation="false" OnClick="btnInscribirEstudiante_Click" />
-                            </asp:Panel>
+                    <!-- Hidden workspace container reference to avoid any null ref -->
+                    <div id="workspaceContainer" runat="server" style="display:none;"></div>
 
-                            <asp:GridView ID="gvInscritos" runat="server" AutoGenerateColumns="False"
-                                CssClass="tbl" GridLines="None" OnRowCommand="gvInscritos_RowCommand">
-                                <Columns>
-                                    <asp:BoundField DataField="EstudianteNombre" HeaderText="Usuario" />
-                                    <asp:BoundField DataField="EstudiantePrograma" HeaderText="Programa" />
-                                    <asp:BoundField DataField="FechaInscripcionFormateada" HeaderText="Fecha" />
-                                    <asp:TemplateField HeaderText="">
-                                        <ItemTemplate>
-                                            <asp:LinkButton ID="btnCancelarInscripcion" runat="server" CommandName="CancelarInscripcion" CommandArgument='<%# Eval("InscripcionId") %>' CssClass="btn-danger-sm" Visible='<%# PuedeGestionar() %>' OnClientClick="return confirm('¿Cancelar inscripción?');">Quitar</asp:LinkButton>
-                                        </ItemTemplate>
-                                    </asp:TemplateField>
-                                </Columns>
-                                <EmptyDataTemplate>
-                                    <div class="empty-notice">Sin participantes inscritos.</div>
-                                </EmptyDataTemplate>
-                            </asp:GridView>
+                    <!-- MIDDLE SECTION: FORM + TABLE GRID -->
+                    <div class="grid-middle <%= PuedeGestionar() ? "" : "solo-tabla" %>">
+                        <!-- LEFT COLUMN: Nueva Actividad Académica Form Card -->
+                        <asp:Panel ID="pnlFormularioCreacion" runat="server" CssClass="app-card">
+                            <div class="card-header-styled">
+                                <div class="header-title-flex">
+                                    <div class="header-circle-icon">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                    </div>
+                                    <span class="header-title-text"><asp:Label ID="lblTituloFormulario" runat="server" Text="Nueva Actividad Académica" /></span>
+                                </div>
+                                <asp:Label ID="lblModoEdicion" runat="server" CssClass="badge-pill badge-proxima" Visible="false" Text="Editando" />
+                            </div>
+
+                            <div class="card-body-styled">
+                                <asp:HiddenField ID="hfActividadId" runat="server" Value="0" />
+
+                                <!-- Row 1: Título & Tipo -->
+                                <div class="form-grid-row">
+                                    <div class="field-box" style="margin-bottom: 0;">
+                                        <label class="field-label">Título de la actividad <span class="field-req">*</span></label>
+                                        <asp:TextBox ID="txtTitulo" runat="server" CssClass="form-input" placeholder="Taller de Programación Web" MaxLength="120" />
+                                        <asp:RequiredFieldValidator ID="rfvTitulo" runat="server" ControlToValidate="txtTitulo" ErrorMessage="Título requerido." Display="Dynamic" ForeColor="#ef4444" ValidationGroup="vgActividad" />
+                                    </div>
+                                    <div class="field-box" style="margin-bottom: 0;">
+                                        <label class="field-label">Tipo de actividad <span class="field-req">*</span></label>
+                                        <asp:DropDownList ID="ddlTipo" runat="server" CssClass="form-select" />
+                                    </div>
+                                </div>
+
+                                <!-- Row 2: Descripción & Fechas -->
+                                <div class="field-box">
+                                    <label class="field-label">Descripción <span class="field-req">*</span></label>
+                                    <asp:TextBox ID="txtDescripcion" runat="server" TextMode="MultiLine" Rows="3" CssClass="form-input" placeholder="Espacio práctico para reforzar conceptos de programación web con ASP.NET." MaxLength="1000" />
+                                </div>
+
+                                <div class="form-grid-row">
+                                    <div class="field-box" style="margin-bottom: 0;">
+                                        <label class="field-label">Fecha de inicio <span class="field-req">*</span></label>
+                                        <asp:TextBox ID="txtFechaInicio" runat="server" TextMode="Date" CssClass="form-input" />
+                                        <asp:RequiredFieldValidator ID="rfvFechaInicio" runat="server" ControlToValidate="txtFechaInicio" ErrorMessage="Fecha requerida." Display="Dynamic" ForeColor="#ef4444" ValidationGroup="vgActividad" />
+                                    </div>
+                                    <div class="field-box" style="margin-bottom: 0;">
+                                        <label class="field-label">Fecha de fin <span class="field-req">*</span></label>
+                                        <asp:TextBox ID="txtFechaFin" runat="server" TextMode="Date" CssClass="form-input" />
+                                    </div>
+                                </div>
+
+                                <!-- Row 3: Horas & Modalidad -->
+                                <div class="form-grid-row-3">
+                                    <div class="field-box" style="margin-bottom: 0;">
+                                        <label class="field-label">Hora de inicio <span class="field-req">*</span></label>
+                                        <asp:TextBox ID="txtHoraInicio" runat="server" TextMode="Time" CssClass="form-input" Text="08:00" />
+                                    </div>
+                                    <div class="field-box" style="margin-bottom: 0;">
+                                        <label class="field-label">Hora de fin <span class="field-req">*</span></label>
+                                        <asp:TextBox ID="txtHoraFin" runat="server" TextMode="Time" CssClass="form-input" Text="12:00" />
+                                    </div>
+                                    <div class="field-box" style="margin-bottom: 0;">
+                                        <label class="field-label">Modalidad <span class="field-req">*</span></label>
+                                        <asp:DropDownList ID="ddlModalidad" runat="server" CssClass="form-select">
+                                            <asp:ListItem Text="Presencial" Value="Presencial" Selected="True" />
+                                            <asp:ListItem Text="Virtual" Value="Virtual" />
+                                            <asp:ListItem Text="Híbrida" Value="Híbrida" />
+                                        </asp:DropDownList>
+                                    </div>
+                                </div>
+
+                                <!-- Row 4: Cupos, Lugar & Estado -->
+                                <div class="form-grid-row-3">
+                                    <div class="field-box" style="margin-bottom: 0;">
+                                        <label class="field-label">Cupos disponibles <span class="field-req">*</span></label>
+                                        <asp:TextBox ID="txtCupos" runat="server" TextMode="Number" CssClass="form-input" Text="30" />
+                                        <asp:RangeValidator ID="rvCupos" runat="server" ControlToValidate="txtCupos" MinimumValue="0" MaximumValue="9999" Type="Integer" ErrorMessage=">= 0" Display="Dynamic" ForeColor="#ef4444" ValidationGroup="vgActividad" />
+                                    </div>
+                                    <div class="field-box" style="margin-bottom: 0;">
+                                        <label class="field-label">Lugar <span class="field-req">*</span></label>
+                                        <asp:TextBox ID="txtLugar" runat="server" CssClass="form-input" placeholder="Laboratorio 3" MaxLength="150" />
+                                        <asp:RequiredFieldValidator ID="rfvLugar" runat="server" ControlToValidate="txtLugar" ErrorMessage="Requerido." Display="Dynamic" ForeColor="#ef4444" ValidationGroup="vgActividad" />
+                                    </div>
+                                    <div class="field-box" style="margin-bottom: 0;">
+                                        <label class="field-label">Estado <span class="field-req">*</span></label>
+                                        <asp:DropDownList ID="ddlEstado" runat="server" CssClass="form-select">
+                                            <asp:ListItem Text="Activa" Value="Activa" Selected="True" />
+                                            <asp:ListItem Text="Próxima" Value="Próxima" />
+                                            <asp:ListItem Text="Finalizada" Value="Finalizada" />
+                                            <asp:ListItem Text="Cancelada" Value="Cancelada" />
+                                        </asp:DropDownList>
+                                    </div>
+                                </div>
+
+                                <!-- Actions -->
+                                <div style="display: flex; gap: 8px; margin-top: 14px;">
+                                    <asp:Button ID="btnGuardar" runat="server" Text="Guardar" CssClass="btn-primary-blue" ValidationGroup="vgActividad" OnClick="btnGuardar_Click" />
+                                    <asp:Button ID="btnLimpiar" runat="server" Text="Limpiar" CssClass="btn-light-outline" CausesValidation="false" OnClick="btnLimpiar_Click" />
+                                </div>
+                            </div>
+                        </asp:Panel>
+
+                        <!-- RIGHT COLUMN: Listado de Actividades Table Card -->
+                        <div class="app-card">
+                            <div class="card-header-styled">
+                                <div class="header-title-flex">
+                                    <div class="header-circle-icon">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                                    </div>
+                                    <span class="header-title-text">Listado de Actividades Académicas</span>
+                                </div>
+
+                                <!-- Search Box Matching Image -->
+                                <div class="table-search-wrap">
+                                    <asp:TextBox ID="txtBuscar" runat="server" CssClass="table-search-input" placeholder="Buscar actividad..." />
+                                    <asp:LinkButton ID="btnBuscar" runat="server" CssClass="table-search-btn" CausesValidation="false" OnClick="btnBuscar_Click" ToolTip="Buscar">
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                    </asp:LinkButton>
+                                </div>
+                            </div>
+
+                            <!-- Subtle hidden / advanced filters when needed -->
+                            <div style="display: none;">
+                                <asp:DropDownList ID="ddlFiltroTipo" runat="server" />
+                                <asp:DropDownList ID="ddlFiltroEstado" runat="server" />
+                                <asp:TextBox ID="txtFiltroFecha" runat="server" />
+                                <asp:Button ID="btnRestablecer" runat="server" OnClick="btnRestablecer_Click" />
+                            </div>
+
+                            <!-- Table matching image -->
+                            <div style="overflow-x: auto;">
+                                <asp:GridView ID="gvActividades" runat="server" AutoGenerateColumns="False"
+                                    CssClass="data-table" GridLines="None" DataKeyNames="ActividadId" OnRowCommand="gvActividades_RowCommand">
+                                    <Columns>
+                                        <asp:BoundField DataField="ActividadId" HeaderText="#" ItemStyle-Width="30px" />
+                                        <asp:BoundField DataField="Titulo" HeaderText="Título" ItemStyle-Font-Bold="false" />
+                                        <asp:BoundField DataField="Tipo" HeaderText="Tipo" />
+                                        <asp:BoundField DataField="FechaInicio" HeaderText="Fecha" DataFormatString="{0:dd/MM/yyyy}" />
+                                        <asp:BoundField DataField="Cupos" HeaderText="Cupos" />
+                                        <asp:TemplateField HeaderText="Estado">
+                                            <ItemTemplate><%# ObtenerBadgeEstado(Eval("Estado").ToString()) %></ItemTemplate>
+                                        </asp:TemplateField>
+                                        <asp:TemplateField HeaderText="Acciones" ItemStyle-Width="110px">
+                                            <ItemTemplate>
+                                                <div class="table-actions-flex">
+                                                    <!-- Eye (Ver) -->
+                                                    <asp:LinkButton ID="btnVer" runat="server" CommandName="VerDetalle" CommandArgument='<%# Eval("ActividadId") %>' CssClass="action-sq-btn btn-action-view" ToolTip="Ver detalle">
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                                    </asp:LinkButton>
+                                                    <!-- Pencil (Editar) -->
+                                                    <asp:LinkButton ID="btnEditar" runat="server" CommandName="EditarActividad" CommandArgument='<%# Eval("ActividadId") %>' CssClass="action-sq-btn btn-action-edit" ToolTip="Editar" Visible='<%# PuedeGestionar() %>'>
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+                                                    </asp:LinkButton>
+                                                    <!-- Trash (Borrar) -->
+                                                    <asp:LinkButton ID="btnEliminar" runat="server" CommandName="EliminarActividad" CommandArgument='<%# Eval("ActividadId") %>' CssClass="action-sq-btn btn-action-delete" ToolTip="Eliminar" OnClientClick="return confirm('¿Eliminar esta actividad?');" Visible='<%# PuedeGestionar() %>'>
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                                    </asp:LinkButton>
+                                                </div>
+                                            </ItemTemplate>
+                                        </asp:TemplateField>
+                                    </Columns>
+                                    <EmptyDataTemplate>
+                                        <div style="padding: 20px; text-align: center; color: #64748b;">No existen actividades registradas.</div>
+                                    </EmptyDataTemplate>
+                                </asp:GridView>
+                            </div>
+
+                            <!-- Table Footer with Interactive Pagination -->
+                            <div class="table-footer-bar">
+                                <span id="paginationInfoText">Cargando registros...</span>
+                                <asp:Label ID="lblTotalRegFooter" runat="server" style="display:none;" />
+                                <div class="pagination-ctrls" id="paginationControls"></div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- 3. Reseñas y Valoraciones (1-5) -->
-                    <div class="box">
-                        <div class="box-header">
-                            <span>Reseñas y Valoraciones</span>
-                            <asp:Label ID="lblPromedioResenas" runat="server" Text="Sin reseñas" style="font-weight: 400; font-size: 11px; color: #52525b;" />
+                    <!-- Placeholder if none selected -->
+                    <asp:Panel ID="pnlSinSeleccion" runat="server" Visible="false" CssClass="app-card" style="padding: 16px; text-align: center; color: #64748b;">
+                        Haga clic en el botón "Ver" (icono de ojo) de cualquier actividad para inspeccionar sus detalles.
+                    </asp:Panel>
+
+                    <!-- BOTTOM ROW: 3 CARDS MATCHING SCREENSHOT -->
+                    <asp:Panel ID="pnlDetalleActividad" runat="server" CssClass="grid-bottom-3">
+                        <!-- BOTTOM CARD 1: Detalles de la Actividad -->
+                        <div class="app-card">
+                            <div class="card-header-styled">
+                                <div class="header-title-flex">
+                                    <div class="header-circle-icon">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                                    </div>
+                                    <span class="header-title-text">Detalles de la Actividad</span>
+                                </div>
+                            </div>
+                            <div class="card-body-styled">
+                                <div class="kv-row">
+                                    <span class="kv-title">Título:</span>
+                                    <span class="kv-value"><strong><asp:Label ID="lblDetalleTitulo" runat="server" Text="Taller de Programación Web" /></strong></span>
+                                </div>
+                                <div class="kv-row">
+                                    <span class="kv-title">Tipo:</span>
+                                    <span class="kv-value"><asp:Label ID="lblDetalleTipo" runat="server" Text="Taller" /></span>
+                                </div>
+                                <div class="kv-row">
+                                    <span class="kv-title">Descripción:</span>
+                                    <span class="kv-value"><asp:Label ID="lblDetalleDescripcion" runat="server" Text="Espacio práctico para reforzar conceptos de programación web con ASP.NET." /></span>
+                                </div>
+                                <div class="kv-row">
+                                    <span class="kv-title">Fecha:</span>
+                                    <span class="kv-value"><asp:Label ID="lblDetalleFecha" runat="server" Text="15/05/2025 - 16/05/2025" /></span>
+                                </div>
+                                <div class="kv-row">
+                                    <span class="kv-title">Hora:</span>
+                                    <span class="kv-value"><asp:Label ID="lblDetalleHora" runat="server" Text="08:00 - 12:00" /></span>
+                                </div>
+                                <div class="kv-row">
+                                    <span class="kv-title">Modalidad:</span>
+                                    <span class="kv-value"><asp:Label ID="lblDetalleModalidad" runat="server" Text="Presencial" /></span>
+                                </div>
+                                <div class="kv-row">
+                                    <span class="kv-title">Lugar:</span>
+                                    <span class="kv-value"><asp:Label ID="lblDetalleLugar" runat="server" Text="Laboratorio 3" /></span>
+                                </div>
+                                <div class="kv-row">
+                                    <span class="kv-title">Cupos:</span>
+                                    <span class="kv-value"><asp:Label ID="lblDetalleCupos" runat="server" Text="30" /></span>
+                                </div>
+                                <div class="kv-row" style="border-bottom: none;">
+                                    <span class="kv-title">Estado:</span>
+                                    <span class="kv-value"><asp:Label ID="lblDetalleEstado" runat="server" Text="Activa" CssClass="badge-pill badge-activa" /></span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="box-body">
-                            <div style="display: flex; gap: 4px; margin-bottom: 6px;">
-                                <asp:DropDownList ID="ddlCalificacion" runat="server" CssClass="f-select" style="width: 75px;">
+
+                        <!-- BOTTOM CARD 2: Estudiantes Inscritos (3) -->
+                        <div class="app-card">
+                            <div class="card-header-styled" style="justify-content: space-between;">
+                                <div class="header-title-flex">
+                                    <div class="header-circle-icon">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" y1="8" x2="19" y2="14"></line><line x1="22" y1="11" x2="16" y2="11"></line></svg>
+                                    </div>
+                                    <span class="header-title-text">Estudiantes Inscritos (<asp:Label ID="lblConteoInscritos" runat="server" Text="3" />)</span>
+                                </div>
+                                <asp:Panel ID="pnlBotonInscribirOtro" runat="server">
+                                    <button type="button" class="btn-green-sm" onclick="toggleEnrollBox()">+ Inscribir estudiante</button>
+                                </asp:Panel>
+                            </div>
+
+                            <div class="card-body-styled" style="padding: 10px 14px;">
+                                <!-- Expandable enroll form -->
+                                <asp:Panel ID="pnlInscripcionManual" runat="server" style="display: none; margin-bottom: 10px; background: #f8fafc; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                                    <div style="display: flex; gap: 6px;">
+                                        <asp:DropDownList ID="ddlEstudianteInscribir" runat="server" CssClass="form-select" />
+                                        <asp:Button ID="btnInscribirEstudiante" runat="server" Text="Inscribir" CssClass="btn-green-sm" CausesValidation="false" OnClick="btnInscribirEstudiante_Click" />
+                                    </div>
+                                </asp:Panel>
+
+                                <!-- Table of enrolled students -->
+                                <asp:GridView ID="gvInscritos" runat="server" AutoGenerateColumns="False"
+                                    CssClass="data-table" GridLines="None" OnRowCommand="gvInscritos_RowCommand">
+                                    <Columns>
+                                        <asp:TemplateField HeaderText="#" ItemStyle-Width="25px">
+                                            <ItemTemplate><%# Container.DataItemIndex + 1 %></ItemTemplate>
+                                        </asp:TemplateField>
+                                        <asp:BoundField DataField="EstudianteNombre" HeaderText="Nombre" />
+                                        <asp:BoundField DataField="EstudiantePrograma" HeaderText="Programa" />
+                                        <asp:BoundField DataField="FechaInscripcion" HeaderText="Fecha inscripción" DataFormatString="{0:dd/MM/yyyy}" />
+                                        <asp:TemplateField HeaderText="Acciones" ItemStyle-Width="35px" ItemStyle-HorizontalAlign="Center">
+                                            <ItemTemplate>
+                                                <asp:LinkButton ID="btnCancelarInscripcion" runat="server" CommandName="CancelarInscripcion" CommandArgument='<%# Eval("InscripcionId") %>' CssClass="action-sq-btn btn-action-delete" ToolTip="Quitar estudiante" OnClientClick="return confirm('¿Cancelar inscripción de este estudiante?');" Visible='<%# PuedeCancelarInscripcion(Eval("UsuarioId")) %>'>
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                                </asp:LinkButton>
+                                            </ItemTemplate>
+                                        </asp:TemplateField>
+                                    </Columns>
+                                    <EmptyDataTemplate>
+                                        <div style="padding: 14px; text-align: center; color: #64748b;">No hay estudiantes inscritos en esta actividad.</div>
+                                    </EmptyDataTemplate>
+                                </asp:GridView>
+                            </div>
+                        </div>
+
+                        <!-- BOTTOM CARD 3: Vista de la Actividad (como la ve el estudiante) -->
+                        <div class="app-card">
+                            <div class="card-header-styled">
+                                <div class="header-title-flex">
+                                    <div class="header-circle-icon">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                    </div>
+                                    <span class="header-title-text">Vista de la Actividad (como la ve el estudiante)</span>
+                                </div>
+                            </div>
+                            <div class="card-body-styled">
+                                <!-- Laptop desk image preview -->
+                                <div class="preview-img-box">
+                                    <img src="Content/images/laptop-preview.svg" alt="Laptop en escritorio" />
+                                </div>
+
+                                <div class="preview-title">
+                                    <asp:Label ID="lblCardPreviewTitulo" runat="server" Text="Taller de Programación Web" />
+                                </div>
+
+                                <div class="preview-badges">
+                                    <span class="badge-pill badge-tipo">
+                                        👤 <asp:Label ID="lblCardPreviewTipo" runat="server" Text="Taller" />
+                                    </span>
+                                    <span class="badge-pill badge-activa">
+                                        ✓ <asp:Label ID="lblCardPreviewEstado" runat="server" Text="Activa" />
+                                    </span>
+                                </div>
+
+                                <div class="preview-meta-list">
+                                    <div class="preview-meta-item">
+                                        <span>📅</span>
+                                        <span><asp:Label ID="lblCardPreviewFecha" runat="server" Text="15/05/2025 - 16/05/2025" /></span>
+                                    </div>
+                                    <div class="preview-meta-item">
+                                        <span>🕒</span>
+                                        <span><asp:Label ID="lblCardPreviewHora" runat="server" Text="08:00 - 12:00" /></span>
+                                    </div>
+                                    <div class="preview-meta-item">
+                                        <span>📍</span>
+                                        <span><asp:Label ID="lblCardPreviewLugar" runat="server" Text="Laboratorio 3" /></span>
+                                    </div>
+                                    <div class="preview-meta-item">
+                                        <span>👥</span>
+                                        <span>Cupos disponibles: <asp:Label ID="lblCardPreviewCupos" runat="server" Text="27 de 30" /></span>
+                                    </div>
+                                </div>
+
+                                <p class="preview-desc">
+                                    <asp:Label ID="lblCardPreviewDescripcion" runat="server" Text="Espacio práctico para reforzar conceptos de programación web con ASP.NET." />
+                                </p>
+
+                                <asp:Button ID="btnEstudianteInscribirme" runat="server" Text="Inscribirme" CssClass="btn-inscribirme" CausesValidation="false" OnClick="btnEstudianteInscribirme_Click" />
+                            </div>
+                        </div>
+                    </asp:Panel>
+
+                    <!-- REVIEWS & RATINGS COLLAPSIBLE SECTION -->
+                    <div class="app-card" style="margin-top: 10px;">
+                        <div class="card-header-styled" style="cursor: pointer;" onclick="toggleReviews()">
+                            <div class="header-title-flex">
+                                <div class="header-circle-icon">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                </div>
+                                <span class="header-title-text">Reseñas y Valoraciones</span>
+                                <span style="font-size: 11.5px; color: #64748b; margin-left: 6px;">(<asp:Label ID="lblPromedioResenas" runat="server" Text="Sin valoraciones" />)</span>
+                            </div>
+                            <span style="font-size: 12px; color: #2563eb;">▼ Desplegar / Ocultar</span>
+                        </div>
+                        <div id="reviewsBody" class="card-body-styled" style="display: none;">
+                            <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                                <asp:DropDownList ID="ddlCalificacion" runat="server" CssClass="form-select" style="width: 85px;">
                                     <asp:ListItem Text="5 ★" Value="5" Selected="True" />
                                     <asp:ListItem Text="4 ★" Value="4" />
                                     <asp:ListItem Text="3 ★" Value="3" />
                                     <asp:ListItem Text="2 ★" Value="2" />
                                     <asp:ListItem Text="1 ★" Value="1" />
                                 </asp:DropDownList>
-                                <asp:TextBox ID="txtComentarioResena" runat="server" CssClass="f-input" placeholder="Escribir valoración..." MaxLength="500" />
-                                <asp:Button ID="btnPublicarResena" runat="server" Text="Publicar" CssClass="btn btn-dark btn-sm" CausesValidation="false" OnClick="btnPublicarResena_Click" />
+                                <asp:TextBox ID="txtComentarioResena" runat="server" CssClass="form-input" placeholder="Escribir opinión o reseña sobre la actividad..." MaxLength="500" />
+                                <asp:Button ID="btnPublicarResena" runat="server" Text="Publicar" CssClass="btn-primary-blue" CausesValidation="false" OnClick="btnPublicarResena_Click" />
                             </div>
 
                             <asp:GridView ID="gvResenas" runat="server" AutoGenerateColumns="False"
-                                CssClass="tbl" GridLines="None" OnRowCommand="gvResenas_RowCommand">
+                                CssClass="data-table" GridLines="None" OnRowCommand="gvResenas_RowCommand">
                                 <Columns>
-                                    <asp:BoundField DataField="UsuarioNombre" HeaderText="Autor" />
-                                    <asp:BoundField DataField="CalificacionTexto" HeaderText="Nota" />
+                                    <asp:BoundField DataField="UsuarioNombre" HeaderText="Autor" ItemStyle-Font-Bold="true" />
+                                    <asp:BoundField DataField="CalificacionTexto" HeaderText="Calificación" />
                                     <asp:BoundField DataField="Comentario" HeaderText="Comentario" HtmlEncode="true" />
-                                    <asp:TemplateField HeaderText="">
+                                    <asp:TemplateField HeaderText="" ItemStyle-Width="30px">
                                         <ItemTemplate>
-                                            <asp:LinkButton ID="btnBorrarResena" runat="server" CommandName="EliminarResena" CommandArgument='<%# Eval("ResenaId") %>' CssClass="btn-danger-sm" Visible='<%# PuedeGestionar() || EsAutorResena(Eval("UsuarioId")) %>'>X</asp:LinkButton>
+                                            <asp:LinkButton ID="btnBorrarResena" runat="server" CommandName="EliminarResena" CommandArgument='<%# Eval("ResenaId") %>' CssClass="action-sq-btn btn-action-delete" Visible='<%# EsAdministrador() || EsAutorResena(Eval("UsuarioId")) %>' ToolTip="Eliminar reseña">X</asp:LinkButton>
                                         </ItemTemplate>
                                     </asp:TemplateField>
                                 </Columns>
                                 <EmptyDataTemplate>
-                                    <div class="empty-notice">No hay valoraciones registradas.</div>
+                                    <div style="padding: 14px; text-align: center; color: #64748b;">No existen opiniones registradas aún.</div>
                                 </EmptyDataTemplate>
                             </asp:GridView>
                         </div>
                     </div>
                 </asp:Panel>
-            </div>
+
+                <!-- SECTION 2: PANEL DE ADMINISTRADOR -->
+                <asp:Panel ID="pnlSeccionAdmin" runat="server" Visible="false">
+                    <div class="admin-cards-grid">
+                        <!-- Subpanel 1: Gestión de Cuentas y Roles -->
+                        <div class="app-card">
+                            <div class="card-header-styled">
+                                <span class="header-title-text">Cuentas y Asignación de Roles</span>
+                                <span style="font-size: 11.5px; color: #64748b;">Registrados: <asp:Label ID="lblTotalUsuariosAdmin" runat="server" Text="0" /></span>
+                            </div>
+                            <div style="overflow-x: auto;">
+                                <asp:GridView ID="gvAdminUsuarios" runat="server" AutoGenerateColumns="False"
+                                    CssClass="data-table" GridLines="None" DataKeyNames="UsuarioId"
+                                    OnRowCommand="gvAdminUsuarios_RowCommand" OnRowDataBound="gvAdminUsuarios_RowDataBound">
+                                    <Columns>
+                                        <asp:BoundField DataField="UsuarioId" HeaderText="#" ItemStyle-Width="25px" />
+                                        <asp:BoundField DataField="Nombre" HeaderText="Nombre" ItemStyle-Font-Bold="true" />
+                                        <asp:BoundField DataField="Correo" HeaderText="Correo" />
+                                        <asp:BoundField DataField="Programa" HeaderText="Programa" />
+                                        <asp:TemplateField HeaderText="Rol">
+                                            <ItemTemplate><%# ObtenerBadgeRol(Eval("Rol").ToString()) %></ItemTemplate>
+                                        </asp:TemplateField>
+                                        <asp:TemplateField HeaderText="Asignar">
+                                            <ItemTemplate>
+                                                <div style="display: flex; gap: 4px; align-items: center;">
+                                                    <asp:DropDownList ID="ddlCambioRol" runat="server" CssClass="form-select" style="width: 105px; padding: 3px 6px; font-size: 11px;">
+                                                        <asp:ListItem Text="Estudiante" Value="Estudiante" />
+                                                        <asp:ListItem Text="Docente" Value="Docente" />
+                                                        <asp:ListItem Text="Administrador" Value="Administrador" />
+                                                    </asp:DropDownList>
+                                                    <asp:LinkButton ID="btnAplicarRol" runat="server" CommandName="CambiarRol" CommandArgument='<%# Eval("UsuarioId") %>' CssClass="action-sq-btn btn-action-view" CausesValidation="false" ToolTip="Guardar rol">✓</asp:LinkButton>
+                                                </div>
+                                            </ItemTemplate>
+                                        </asp:TemplateField>
+                                        <asp:TemplateField HeaderText="Acción">
+                                            <ItemTemplate>
+                                                <asp:LinkButton ID="btnEliminarUsuario" runat="server" CommandName="EliminarUsuario" CommandArgument='<%# Eval("UsuarioId") %>' CssClass="action-sq-btn btn-action-delete" CausesValidation="false" ToolTip="Eliminar cuenta" OnClientClick="return confirm('¿Eliminar usuario?');">✕</asp:LinkButton>
+                                            </ItemTemplate>
+                                        </asp:TemplateField>
+                                    </Columns>
+                                    <EmptyDataTemplate>
+                                        <div style="padding: 16px; text-align: center; color: #64748b;">No hay usuarios registrados.</div>
+                                    </EmptyDataTemplate>
+                                </asp:GridView>
+                            </div>
+                        </div>
+
+                        <!-- Subpanel 2: Catálogo de Tipos -->
+                        <div class="app-card">
+                            <div class="card-header-styled">
+                                <span class="header-title-text">Catálogo de Tipos de Actividad</span>
+                            </div>
+                            <div class="card-body-styled">
+                                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; margin-bottom: 12px;">
+                                    <div style="font-weight: 600; font-size: 12px; margin-bottom: 6px; color: #1e293b;">Agregar Nueva Categoría</div>
+                                    <div class="field-box" style="margin-bottom: 6px;">
+                                        <label class="field-label">Nombre *</label>
+                                        <asp:TextBox ID="txtNuevoTipoNombre" runat="server" CssClass="form-input" placeholder="Ej: Hackathon" MaxLength="50" />
+                                    </div>
+                                    <div class="field-box" style="margin-bottom: 8px;">
+                                        <label class="field-label">Descripción</label>
+                                        <asp:TextBox ID="txtNuevoTipoDescripcion" runat="server" CssClass="form-input" placeholder="Breve descripción..." MaxLength="250" />
+                                    </div>
+                                    <asp:Button ID="btnCrearTipoActividad" runat="server" Text="+ Guardar Categoría" CssClass="btn-primary-blue" CausesValidation="false" OnClick="btnCrearTipoActividad_Click" />
+                                </div>
+
+                                <div style="overflow-x: auto;">
+                                    <asp:GridView ID="gvAdminTipos" runat="server" AutoGenerateColumns="False"
+                                        CssClass="data-table" GridLines="None" DataKeyNames="TipoId" OnRowCommand="gvAdminTipos_RowCommand">
+                                        <Columns>
+                                            <asp:BoundField DataField="TipoId" HeaderText="#" ItemStyle-Width="25px" />
+                                            <asp:BoundField DataField="Nombre" HeaderText="Tipo" ItemStyle-Font-Bold="true" />
+                                            <asp:BoundField DataField="Descripcion" HeaderText="Descripción" />
+                                            <asp:TemplateField HeaderText="Acción" ItemStyle-Width="35px">
+                                                <ItemTemplate>
+                                                    <asp:LinkButton ID="btnEliminarTipo" runat="server" CommandName="EliminarTipo" CommandArgument='<%# Eval("TipoId") %>' CssClass="action-sq-btn btn-action-delete" CausesValidation="false" OnClientClick="return confirm('¿Eliminar tipo?');">✕</asp:LinkButton>
+                                                </ItemTemplate>
+                                            </asp:TemplateField>
+                                        </Columns>
+                                        <EmptyDataTemplate>
+                                            <div style="padding: 14px; text-align: center; color: #64748b;">No hay categorías registradas.</div>
+                                        </EmptyDataTemplate>
+                                    </asp:GridView>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </asp:Panel>
+            </main>
         </div>
-        </asp:Panel>
-
-        <!-- SECTION 2: Panel de Control de Administrador (Usuarios y Catálogos) -->
-        <asp:Panel ID="pnlSeccionAdmin" runat="server" Visible="false">
-            <div class="admin-grid">
-                <!-- Subpanel 1: Gestión de Usuarios y Roles -->
-                <div class="box">
-                    <div class="box-header">
-                        <span>Gestión de Cuentas y Asignación de Roles</span>
-                        <span style="font-size: 11px; font-weight: normal; color: #71717a;">Registrados: <asp:Label ID="lblTotalUsuariosAdmin" runat="server" Text="0" /></span>
-                    </div>
-                    <div style="overflow-x: auto;">
-                        <asp:GridView ID="gvAdminUsuarios" runat="server" AutoGenerateColumns="False"
-                            CssClass="tbl" GridLines="None" DataKeyNames="UsuarioId"
-                            OnRowCommand="gvAdminUsuarios_RowCommand" OnRowDataBound="gvAdminUsuarios_RowDataBound">
-                            <Columns>
-                                <asp:BoundField DataField="UsuarioId" HeaderText="ID" ItemStyle-Width="25px" />
-                                <asp:BoundField DataField="Nombre" HeaderText="Nombre" ItemStyle-Font-Bold="true" />
-                                <asp:BoundField DataField="Correo" HeaderText="Correo" />
-                                <asp:BoundField DataField="Programa" HeaderText="Programa" />
-                                <asp:TemplateField HeaderText="Rol Actual">
-                                    <ItemTemplate>
-                                        <%# ObtenerBadgeRol(Eval("Rol").ToString()) %>
-                                    </ItemTemplate>
-                                </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Asignar Rol">
-                                    <ItemTemplate>
-                                        <div style="display: flex; gap: 3px; align-items: center;">
-                                            <asp:DropDownList ID="ddlCambioRol" runat="server" CssClass="f-select" style="width: 105px; padding: 2px 4px; font-size: 11px;">
-                                                <asp:ListItem Text="Estudiante" Value="Estudiante" />
-                                                <asp:ListItem Text="Docente" Value="Docente" />
-                                                <asp:ListItem Text="Administrador" Value="Administrador" />
-                                            </asp:DropDownList>
-                                            <asp:LinkButton ID="btnAplicarRol" runat="server" CommandName="CambiarRol" CommandArgument='<%# Eval("UsuarioId") %>' CssClass="btn btn-dark btn-sm" CausesValidation="false">Cambiar</asp:LinkButton>
-                                        </div>
-                                    </ItemTemplate>
-                                </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Acción">
-                                    <ItemTemplate>
-                                        <asp:LinkButton ID="btnEliminarUsuario" runat="server" CommandName="EliminarUsuario" CommandArgument='<%# Eval("UsuarioId") %>' CssClass="btn-danger-sm" CausesValidation="false" OnClientClick="return confirm('¿Está seguro de eliminar este usuario? Sus inscripciones y reseñas asociadas se removerán.');">Eliminar</asp:LinkButton>
-                                    </ItemTemplate>
-                                </asp:TemplateField>
-                            </Columns>
-                            <EmptyDataTemplate>
-                                <div class="empty-notice">No hay usuarios registrados.</div>
-                            </EmptyDataTemplate>
-                        </asp:GridView>
-                    </div>
-                </div>
-
-                <!-- Subpanel 2: Gestión de Catálogo de Tipos de Actividad -->
-                <div class="box">
-                    <div class="box-header">
-                        <span>Catálogo de Tipos de Actividad Académica</span>
-                    </div>
-                    <div class="box-body">
-                        <!-- Form to Add Type -->
-                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 3px; padding: 8px; margin-bottom: 8px;">
-                            <div style="font-weight: 600; font-size: 11.5px; margin-bottom: 5px; color: #1e293b;">Agregar Nueva Categoría / Tipo</div>
-                            <div class="f-group" style="margin-bottom: 4px;">
-                                <label class="f-label">Nombre *</label>
-                                <asp:TextBox ID="txtNuevoTipoNombre" runat="server" CssClass="f-input" placeholder="Ej: Hackathon, Coloquio..." MaxLength="50" />
-                            </div>
-                            <div class="f-group" style="margin-bottom: 6px;">
-                                <label class="f-label">Descripción</label>
-                                <asp:TextBox ID="txtNuevoTipoDescripcion" runat="server" CssClass="f-input" placeholder="Breve descripción del formato..." MaxLength="250" />
-                            </div>
-                            <asp:Button ID="btnCrearTipoActividad" runat="server" Text="+ Guardar Categoría" CssClass="btn btn-dark btn-sm" CausesValidation="false" OnClick="btnCrearTipoActividad_Click" />
-                        </div>
-
-                        <div style="overflow-x: auto;">
-                            <asp:GridView ID="gvAdminTipos" runat="server" AutoGenerateColumns="False"
-                                CssClass="tbl" GridLines="None" DataKeyNames="TipoId" OnRowCommand="gvAdminTipos_RowCommand">
-                                <Columns>
-                                    <asp:BoundField DataField="TipoId" HeaderText="ID" ItemStyle-Width="25px" />
-                                    <asp:BoundField DataField="Nombre" HeaderText="Tipo" ItemStyle-Font-Bold="true" />
-                                    <asp:BoundField DataField="Descripcion" HeaderText="Descripción" />
-                                    <asp:TemplateField HeaderText="Acción" ItemStyle-Width="55px">
-                                        <ItemTemplate>
-                                            <asp:LinkButton ID="btnEliminarTipo" runat="server" CommandName="EliminarTipo" CommandArgument='<%# Eval("TipoId") %>' CssClass="btn-danger-sm" CausesValidation="false" OnClientClick="return confirm('¿Eliminar esta categoría?');">Borrar</asp:LinkButton>
-                                        </ItemTemplate>
-                                    </asp:TemplateField>
-                                </Columns>
-                                <EmptyDataTemplate>
-                                    <div class="empty-notice">No hay categorías registradas en el catálogo.</div>
-                                </EmptyDataTemplate>
-                            </asp:GridView>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </asp:Panel>
     </form>
+
+    <script>
+        function toggleEnrollBox() {
+            var box = document.getElementById('<%= pnlInscripcionManual.ClientID %>');
+            if (box) {
+                box.style.display = (box.style.display === 'none' || box.style.display === '') ? 'block' : 'none';
+            }
+        }
+
+        function toggleReviews() {
+            var r = document.getElementById('reviewsBody');
+            if (r) {
+                r.style.display = (r.style.display === 'none' || r.style.display === '') ? 'block' : 'none';
+            }
+        }
+
+        // ==========================================
+        // PAGINACIÓN INTERACTIVA DINÁMICA
+        // ==========================================
+        var currentPage = 1;
+        var pageSize = 5;
+
+        function getTableRows() {
+            var table = document.getElementById('<%= gvActividades.ClientID %>');
+            if (!table) return [];
+            var allRows = Array.from(table.querySelectorAll('tbody > tr, tr'));
+            // Filtrar sólo filas de datos válidas (excluir cabecera th y mensajes de tabla vacía)
+            return allRows.filter(function (r) {
+                return r.querySelector('td') && r.cells.length > 2;
+            });
+        }
+
+        function updatePagination(filteredRows) {
+            var allRows = getTableRows();
+            var rows = filteredRows || allRows;
+            var totalRows = rows.length;
+            var totalPages = Math.max(1, Math.ceil(totalRows / pageSize));
+
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            var startIdx = (currentPage - 1) * pageSize;
+            var endIdx = Math.min(startIdx + pageSize, totalRows);
+
+            // Ocultar todas las filas primero
+            allRows.forEach(function (r) { r.style.display = 'none'; });
+
+            // Mostrar sólo el rango de la página actual
+            rows.forEach(function (row, idx) {
+                if (idx >= startIdx && idx < endIdx) {
+                    row.style.display = '';
+                }
+            });
+
+            // Actualizar texto informativo: "Mostrando X a Y de Z registros"
+            var infoSpan = document.getElementById('paginationInfoText');
+            if (infoSpan) {
+                if (totalRows === 0) {
+                    infoSpan.innerText = 'Mostrando 0 registros';
+                } else {
+                    infoSpan.innerText = 'Mostrando ' + (startIdx + 1) + ' a ' + endIdx + ' de ' + totalRows + ' registros';
+                }
+            }
+
+            // Renderizar botones de paginación interactivos
+            var container = document.getElementById('paginationControls');
+            if (!container) return;
+            container.innerHTML = '';
+
+            function createBtn(html, title, isDisabled, isActive, onClick) {
+                var btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'page-num' + (isActive ? ' active' : '') + (isDisabled ? ' disabled' : '');
+                btn.innerHTML = html;
+                btn.title = title || '';
+                if (isDisabled) {
+                    btn.disabled = true;
+                } else {
+                    btn.onclick = onClick;
+                }
+                return btn;
+            }
+
+            // « Primera página
+            container.appendChild(createBtn('&laquo;', 'Primera página', currentPage === 1, false, function () {
+                currentPage = 1;
+                updatePagination(filteredRows);
+            }));
+
+            // ‹ Página anterior
+            container.appendChild(createBtn('&lsaquo;', 'Página anterior', currentPage === 1, false, function () {
+                currentPage = Math.max(1, currentPage - 1);
+                updatePagination(filteredRows);
+            }));
+
+            // Botones numéricos 1, 2, 3...
+            for (var p = 1; p <= totalPages; p++) {
+                (function (pNum) {
+                    container.appendChild(createBtn(pNum.toString(), 'Página ' + pNum, false, pNum === currentPage, function () {
+                        currentPage = pNum;
+                        updatePagination(filteredRows);
+                    }));
+                })(p);
+            }
+
+            // › Página siguiente
+            container.appendChild(createBtn('&rsaquo;', 'Página siguiente', currentPage === totalPages, false, function () {
+                currentPage = Math.min(totalPages, currentPage + 1);
+                updatePagination(filteredRows);
+            }));
+
+            // » Última página
+            container.appendChild(createBtn('&raquo;', 'Última página', currentPage === totalPages, false, function () {
+                currentPage = totalPages;
+                updatePagination(filteredRows);
+            }));
+        }
+
+        function filterTableBySearch() {
+            var txt = document.getElementById('<%= txtBuscar.ClientID %>');
+            var query = (txt ? txt.value : '').toLowerCase().trim();
+            var allRows = getTableRows();
+
+            if (!query) {
+                currentPage = 1;
+                updatePagination();
+                return;
+            }
+
+            var matchingRows = allRows.filter(function (row) {
+                return row.innerText.toLowerCase().indexOf(query) >= 0;
+            });
+
+            currentPage = 1;
+            updatePagination(matchingRows);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            updatePagination();
+
+            var searchInput = document.getElementById('<%= txtBuscar.ClientID %>');
+            if (searchInput) {
+                searchInput.addEventListener('input', filterTableBySearch);
+                searchInput.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        filterTableBySearch();
+                        return false;
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>

@@ -34,9 +34,12 @@ namespace WebApplication4
                 return;
             }
 
-            lblUsuarioNombre.Text = Server.HtmlEncode(Session["UsuarioNombre"]?.ToString() ?? "");
-            lblUsuarioPrograma.Text = Server.HtmlEncode(Session["UsuarioPrograma"]?.ToString() ?? "");
-            lblUsuarioRol.Text = Server.HtmlEncode(Session["UsuarioRol"]?.ToString() ?? "");
+            if (lblUsuarioNombre != null)
+                lblUsuarioNombre.Text = Server.HtmlEncode(Session["UsuarioNombre"]?.ToString() ?? "María López");
+            if (lblUsuarioPrograma != null)
+                lblUsuarioPrograma.Text = Server.HtmlEncode(Session["UsuarioPrograma"]?.ToString() ?? "Ingeniería de Sistemas");
+            if (lblUsuarioRol != null)
+                lblUsuarioRol.Text = Server.HtmlEncode(Session["UsuarioRol"]?.ToString() ?? "Estudiante");
 
             ConfigurarPermisosPorRol(Session["UsuarioRol"]?.ToString());
 
@@ -58,14 +61,9 @@ namespace WebApplication4
             pnlAdminNav.Visible = esAdmin;
             pnlFormularioCreacion.Visible = esGestion;
             pnlInscripcionManual.Visible = esGestion;
-
-            if (!esGestion)
+            if (pnlBotonInscribirOtro != null)
             {
-                workspaceContainer.Style["grid-template-columns"] = "1fr";
-            }
-            else
-            {
-                workspaceContainer.Style["grid-template-columns"] = "310px 1fr";
+                pnlBotonInscribirOtro.Visible = esGestion;
             }
         }
 
@@ -78,6 +76,13 @@ namespace WebApplication4
         public bool EsAdministrador()
         {
             return (Session["UsuarioRol"]?.ToString() ?? "") == "Administrador";
+        }
+
+        public bool PuedeCancelarInscripcion(object usuarioIdObj)
+        {
+            if (PuedeGestionar()) return true;
+            if (usuarioIdObj == null) return false;
+            return int.TryParse(usuarioIdObj.ToString(), out int uId) && uId == UsuarioLogueadoId;
         }
 
         public void MostrarUsuariosAdmin(IList<UsuarioDto> usuarios)
@@ -105,6 +110,7 @@ namespace WebApplication4
 
         public void MostrarActividades(IList<ActividadDto> actividades)
         {
+            lblTotalRegFooter.Text = (actividades?.Count ?? 0).ToString();
             gvActividades.DataSource = actividades;
             gvActividades.DataBind();
         }
@@ -130,6 +136,7 @@ namespace WebApplication4
             pnlDetalleActividad.Visible = true;
             pnlSinSeleccion.Visible = false;
 
+            // Details card
             lblDetalleTitulo.Text = Server.HtmlEncode(act.Titulo);
             lblDetalleTipo.Text = Server.HtmlEncode(act.Tipo);
             lblDetalleDescripcion.Text = string.IsNullOrWhiteSpace(act.Descripcion) ? "—" : Server.HtmlEncode(act.Descripcion);
@@ -141,8 +148,25 @@ namespace WebApplication4
             lblDetalleEstado.Text = Server.HtmlEncode(act.Estado);
             lblDetalleEstado.CssClass = ObtenerClaseBadgeEstado(act.Estado);
 
+            // Student Preview card
+            lblCardPreviewTitulo.Text = Server.HtmlEncode(act.Titulo);
+            lblCardPreviewTipo.Text = Server.HtmlEncode(act.Tipo);
+            lblCardPreviewEstado.Text = Server.HtmlEncode(act.Estado);
+            lblCardPreviewEstado.CssClass = ObtenerClaseBadgeEstado(act.Estado);
+            lblCardPreviewFecha.Text = Server.HtmlEncode(act.FechasFormateadas);
+            lblCardPreviewHora.Text = Server.HtmlEncode(act.HorarioFormateado);
+            lblCardPreviewLugar.Text = Server.HtmlEncode(act.Lugar);
+            lblCardPreviewDescripcion.Text = string.IsNullOrWhiteSpace(act.Descripcion) 
+                ? "Espacio práctico para reforzar conceptos de programación web con ASP.NET." 
+                : Server.HtmlEncode(act.Descripcion);
+
+            int inscritosCount = 0;
+            int.TryParse(lblConteoInscritos.Text, out inscritosCount);
+            int disponibles = Math.Max(0, act.Cupos - inscritosCount);
+            lblCardPreviewCupos.Text = $"{disponibles} de {act.Cupos}";
+
             btnEstudianteInscribirme.Enabled = (act.Estado == "Activa" || act.Estado == "Próxima") && act.Cupos > 0;
-            btnEstudianteInscribirme.Text = act.Cupos <= 0 ? "Cupos agotados" : "Inscribirme con mi cuenta";
+            btnEstudianteInscribirme.Text = act.Cupos <= 0 ? "Cupos agotados" : "Inscribirme";
         }
 
         public void OcultarDetalleActividad()
@@ -154,9 +178,39 @@ namespace WebApplication4
 
         public void MostrarEstudiantesInscritos(IList<InscripcionDto> inscritos)
         {
-            lblConteoInscritos.Text = (inscritos?.Count ?? 0).ToString();
+            int count = inscritos?.Count ?? 0;
+            lblConteoInscritos.Text = count.ToString();
             gvInscritos.DataSource = inscritos;
             gvInscritos.DataBind();
+
+            int.TryParse(lblDetalleCupos.Text, out int totalCupos);
+            int disp = Math.Max(0, totalCupos - count);
+            lblCardPreviewCupos.Text = $"{disp} de {totalCupos}";
+
+            string estado = lblDetalleEstado.Text;
+            bool estadoPermite = estado == "Activa" || estado == "Próxima";
+            bool yaInscrito = inscritos != null && inscritos.Any(i => i.UsuarioId == UsuarioLogueadoId);
+
+            if (yaInscrito)
+            {
+                btnEstudianteInscribirme.Enabled = false;
+                btnEstudianteInscribirme.Text = "Ya estás inscrito";
+            }
+            else if (!estadoPermite)
+            {
+                btnEstudianteInscribirme.Enabled = false;
+                btnEstudianteInscribirme.Text = "Inscripciones cerradas";
+            }
+            else if (totalCupos > 0 && disp <= 0)
+            {
+                btnEstudianteInscribirme.Enabled = false;
+                btnEstudianteInscribirme.Text = "Cupos agotados";
+            }
+            else
+            {
+                btnEstudianteInscribirme.Enabled = true;
+                btnEstudianteInscribirme.Text = "Inscribirme";
+            }
         }
 
         public void MostrarResenas(IList<ResenaDto> resenas)
@@ -177,7 +231,6 @@ namespace WebApplication4
 
         public void CargarTiposActividad(IList<string> tipos)
         {
-            // 1. Dropdown del formulario de registro / edición
             string seleccionadoForm = ddlTipo.SelectedValue;
             ddlTipo.Items.Clear();
             if (tipos != null)
@@ -192,7 +245,6 @@ namespace WebApplication4
                 ddlTipo.SelectedValue = seleccionadoForm;
             }
 
-            // 2. Dropdown del filtro de búsqueda en el listado
             string seleccionadoFiltro = ddlFiltroTipo.SelectedValue;
             ddlFiltroTipo.Items.Clear();
             ddlFiltroTipo.Items.Add(new ListItem("Tipo: Todos", "Todos"));
@@ -241,14 +293,14 @@ namespace WebApplication4
             txtFechaInicio.Text = DateTime.Today.ToString("yyyy-MM-dd");
             txtFechaFin.Text = DateTime.Today.AddDays(1).ToString("yyyy-MM-dd");
             txtHoraInicio.Text = "08:00";
-            txtHoraFin.Text = "10:00";
+            txtHoraFin.Text = "12:00";
             txtLugar.Text = "";
             txtCupos.Text = "30";
             if (ddlTipo.Items.Count > 0) ddlTipo.SelectedIndex = 0;
             ddlModalidad.SelectedIndex = 0;
             ddlEstado.SelectedIndex = 0;
 
-            lblTituloFormulario.Text = "Registrar Actividad";
+            lblTituloFormulario.Text = "Nueva Actividad Académica";
             lblModoEdicion.Visible = false;
             btnGuardar.Text = "Guardar";
         }
@@ -310,6 +362,11 @@ namespace WebApplication4
 
         protected void btnGuardar_Click(object sender, EventArgs e)
         {
+            if (!PuedeGestionar())
+            {
+                MostrarMensajeError("Acceso denegado: sólo los docentes y administradores pueden crear o modificar actividades.");
+                return;
+            }
             if (!Page.IsValid) return;
             _presenter.GuardarActividad();
         }
@@ -355,9 +412,19 @@ namespace WebApplication4
                         _presenter.SeleccionarActividad(id);
                         break;
                     case "EditarActividad":
+                        if (!PuedeGestionar())
+                        {
+                            MostrarMensajeError("Acceso denegado: no tiene permisos para editar actividades.");
+                            return;
+                        }
                         _presenter.PrepararEdicion(id);
                         break;
                     case "EliminarActividad":
+                        if (!PuedeGestionar())
+                        {
+                            MostrarMensajeError("Acceso denegado: no tiene permisos para eliminar actividades.");
+                            return;
+                        }
                         _presenter.EliminarActividad(id);
                         break;
                 }
@@ -366,6 +433,11 @@ namespace WebApplication4
 
         protected void btnInscribirEstudiante_Click(object sender, EventArgs e)
         {
+            if (!PuedeGestionar())
+            {
+                MostrarMensajeError("Acceso denegado: no tiene permisos para inscribir a otros estudiantes.");
+                return;
+            }
             if (int.TryParse(ddlEstudianteInscribir.SelectedValue, out int usuarioId) && usuarioId > 0)
             {
                 _presenter.InscribirEstudiante(ActividadSeleccionadaId, usuarioId);
@@ -391,7 +463,7 @@ namespace WebApplication4
         {
             if (e.CommandName == "CancelarInscripcion" && int.TryParse(e.CommandArgument?.ToString(), out int inscripcionId))
             {
-                _presenter.CancelarInscripcion(inscripcionId, ActividadSeleccionadaId);
+                _presenter.CancelarInscripcion(inscripcionId, ActividadSeleccionadaId, UsuarioLogueadoId, PuedeGestionar());
             }
         }
 
@@ -412,7 +484,7 @@ namespace WebApplication4
         {
             if (e.CommandName == "EliminarResena" && int.TryParse(e.CommandArgument?.ToString(), out int resenaId))
             {
-                _presenter.EliminarResena(resenaId, ActividadSeleccionadaId);
+                _presenter.EliminarResena(resenaId, ActividadSeleccionadaId, UsuarioLogueadoId, EsAdministrador());
             }
         }
 
@@ -429,21 +501,31 @@ namespace WebApplication4
         {
             pnlSeccionActividades.Visible = true;
             pnlSeccionAdmin.Visible = false;
-            btnTabActividades.CssClass = "tab-btn tab-btn-active";
-            btnTabAdmin.CssClass = "tab-btn";
+            btnTabActividades.CssClass = "tab-pill active";
+            btnTabAdmin.CssClass = "tab-pill";
         }
 
         protected void btnTabAdmin_Click(object sender, EventArgs e)
         {
+            if (!EsAdministrador())
+            {
+                MostrarMensajeError("Acceso denegado: sección reservada exclusivamente para el Administrador.");
+                return;
+            }
             pnlSeccionActividades.Visible = false;
             pnlSeccionAdmin.Visible = true;
-            btnTabActividades.CssClass = "tab-btn";
-            btnTabAdmin.CssClass = "tab-btn tab-btn-active";
+            btnTabActividades.CssClass = "tab-pill";
+            btnTabAdmin.CssClass = "tab-pill active";
             _presenter.CargarGestionAdmin();
         }
 
         protected void gvAdminUsuarios_RowCommand(object sender, GridViewCommandEventArgs e)
         {
+            if (!EsAdministrador())
+            {
+                MostrarMensajeError("Acceso denegado: se requieren permisos de Administrador.");
+                return;
+            }
             if (int.TryParse(e.CommandArgument?.ToString(), out int targetUsuarioId))
             {
                 if (e.CommandName == "CambiarRol")
@@ -480,13 +562,18 @@ namespace WebApplication4
                 var btnEliminar = (LinkButton)e.Row.FindControl("btnEliminarUsuario");
                 if (btnEliminar != null && u != null && u.UsuarioId == UsuarioLogueadoId)
                 {
-                    btnEliminar.Visible = false; // El administrador no se puede autoeliminar
+                    btnEliminar.Visible = false;
                 }
             }
         }
 
         protected void btnCrearTipoActividad_Click(object sender, EventArgs e)
         {
+            if (!EsAdministrador())
+            {
+                MostrarMensajeError("Acceso denegado: se requieren permisos de Administrador.");
+                return;
+            }
             string nombre = txtNuevoTipoNombre.Text.Trim();
             string desc = txtNuevoTipoDescripcion.Text.Trim();
             if (string.IsNullOrWhiteSpace(nombre))
@@ -502,6 +589,11 @@ namespace WebApplication4
 
         protected void gvAdminTipos_RowCommand(object sender, GridViewCommandEventArgs e)
         {
+            if (!EsAdministrador())
+            {
+                MostrarMensajeError("Acceso denegado: se requieren permisos de Administrador.");
+                return;
+            }
             if (e.CommandName == "EliminarTipo" && int.TryParse(e.CommandArgument?.ToString(), out int tipoId))
             {
                 _presenter.EliminarTipoActividad(tipoId);
@@ -512,9 +604,9 @@ namespace WebApplication4
         {
             switch (rol?.ToLower())
             {
-                case "administrador": return "<span class='tag tag-administrador'>Administrador</span>";
-                case "docente": return "<span class='tag tag-docente'>Docente</span>";
-                default: return "<span class='tag tag-estudiante'>Estudiante</span>";
+                case "administrador": return "<span class='badge-pill badge-finalizada' style='background:#fee2e2;color:#991b1b;'>Administrador</span>";
+                case "docente": return "<span class='badge-pill badge-finalizada' style='background:#f3e8ff;color:#7e22ce;'>Docente</span>";
+                default: return "<span class='badge-pill badge-activa'>Estudiante</span>";
             }
         }
 
@@ -523,18 +615,19 @@ namespace WebApplication4
         public string ObtenerBadgeEstado(string estado)
         {
             string clase = ObtenerClaseBadgeEstado(estado);
-            return $"<span class='{clase}'>{Server.HtmlEncode(estado)}</span>";
+            return $"<span class='badge-pill {clase}'>{Server.HtmlEncode(estado)}</span>";
         }
 
         private string ObtenerClaseBadgeEstado(string estado)
         {
             switch (estado?.ToLower())
             {
-                case "activa": return "tag tag-activa";
+                case "activa": return "badge-activa";
                 case "próxima":
-                case "proxima": return "tag tag-proxima";
-                case "finalizada": return "tag tag-finalizada";
-                default: return "tag tag-tipo";
+                case "proxima": return "badge-proxima";
+                case "finalizada": return "badge-finalizada";
+                case "cancelada": return "badge-cancelada";
+                default: return "badge-tipo";
             }
         }
 

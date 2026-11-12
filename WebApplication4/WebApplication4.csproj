@@ -130,6 +130,8 @@
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="Content\Site.css" />
     <Content Include="Content\StyleSheet1.css" />
+    <Content Include="Content\images\students-banner.svg" />
+    <Content Include="Content\images\laptop-preview.svg" />
     <Content Include="Default.aspx" />
     <Content Include="favicon.ico" />
     <Content Include="FormularioWeb.aspx" />

@@ -223,10 +223,21 @@ namespace WebApplication4.Presenters
             }
         }
 
-        public void CancelarInscripcion(int inscripcionId, int actividadId)
+        public void CancelarInscripcion(int inscripcionId, int actividadId, int usuarioIdSolicitante = 0, bool puedeGestionar = true)
         {
             try
             {
+                if (!puedeGestionar)
+                {
+                    var inscritos = _inscripcionService.ListarPorActividad(actividadId);
+                    var mia = inscritos?.FirstOrDefault(i => i.InscripcionId == inscripcionId);
+                    if (mia == null || mia.UsuarioId != usuarioIdSolicitante)
+                    {
+                        _view.MostrarMensajeError("Acceso denegado: sólo puedes cancelar tu propia inscripción.");
+                        return;
+                    }
+                }
+
                 var resultado = _inscripcionService.CancelarInscripcion(inscripcionId);
                 if (resultado.Exito)
                 {
@@ -275,10 +286,21 @@ namespace WebApplication4.Presenters
             }
         }
 
-        public void EliminarResena(int resenaId, int actividadId)
+        public void EliminarResena(int resenaId, int actividadId, int usuarioIdSolicitante = 0, bool esAdmin = false)
         {
             try
             {
+                if (!esAdmin)
+                {
+                    var resenas = _resenaService.ListarPorActividad(actividadId);
+                    var mia = resenas?.FirstOrDefault(r => r.ResenaId == resenaId);
+                    if (mia == null || mia.UsuarioId != usuarioIdSolicitante)
+                    {
+                        _view.MostrarMensajeError("Acceso denegado: sólo puedes eliminar tus propias opiniones.");
+                        return;
+                    }
+                }
+
                 var resultado = _resenaService.EliminarResena(resenaId);
                 if (resultado.Exito)
                 {

@@ -17,12 +17,29 @@ namespace WebApplication4
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!IsPostBack)
+            if (IsPostBack)
+            {
+                // Preserve password fields so Enter or validation doesn't clear them
+                PreservarClaves();
+            }
+            else
             {
                 if (Request.QueryString["modo"] == "registro")
                 {
                     CambiarModo(esRegistro: true);
                 }
+            }
+        }
+
+        private void PreservarClaves()
+        {
+            if (!string.IsNullOrEmpty(txtClave.Text))
+            {
+                txtClave.Attributes["value"] = txtClave.Text;
+            }
+            if (!string.IsNullOrEmpty(txtRegClave.Text))
+            {
+                txtRegClave.Attributes["value"] = txtRegClave.Text;
             }
         }
 
@@ -47,6 +64,9 @@ namespace WebApplication4
             lblMensaje.Text = Server.HtmlEncode(mensaje);
             lblMensaje.Visible = true;
             lblExito.Visible = false;
+
+            // Retain password when displaying error
+            PreservarClaves();
         }
 
         public void MostrarExito(string mensaje)
@@ -70,11 +90,13 @@ namespace WebApplication4
 
         protected void btnIngresar_Click(object sender, EventArgs e)
         {
+            PreservarClaves();
             _presenter.IniciarSesion();
         }
 
         protected void btnCrearCuenta_Click(object sender, EventArgs e)
         {
+            PreservarClaves();
             _presenter.RegistrarCuenta();
         }
 
@@ -96,6 +118,8 @@ namespace WebApplication4
             btnTabRegistro.CssClass = esRegistro ? "tab-btn active" : "tab-btn";
             lblMensaje.Visible = false;
             lblExito.Visible = false;
+
+            PreservarClaves();
         }
     }
 }
